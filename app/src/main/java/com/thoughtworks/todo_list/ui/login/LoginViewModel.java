@@ -1,7 +1,7 @@
 package com.thoughtworks.todo_list.ui.login;
 
 import android.annotation.SuppressLint;
-import android.util.Patterns;
+import android.util.Log;
 
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.MutableLiveData;
@@ -9,16 +9,20 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
 import com.thoughtworks.todo_list.R;
+import com.thoughtworks.todo_list.repository.user.entity.User;
 import com.thoughtworks.todo_list.repository.utils.Encryptor;
 
+import io.reactivex.MaybeObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class LoginViewModel extends ViewModel {
     private MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
     private MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
-
     private UserRepository userRepository;
+    private Disposable disposable;
+    private final static String TAG = "LoginViewModel";
 
     void setUserRepository(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -34,18 +38,41 @@ public class LoginViewModel extends ViewModel {
 
     @SuppressLint("CheckResult")
     public void login(String username, String password) {
-        userRepository.findByName(username).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                .doOnComplete(() -> loginResult.setValue(new LoginResult(R.string.login_failed_username)))
-                .subscribe(u -> {
-                    if (u == null) {
+        userRepository.findUserByName(username)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new MaybeObserver<User>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        Log.d(TAG, "onSubscribe: ");
+                        disposable = d;
+                    }
+
+                    @Override
+                    public void onSuccess(User user) {
+                        Log.d(TAG, "onNext: ");
+                        if (user == null) {
+                            loginResult.postValue(new LoginResult(R.string.login_failed_username));
+                            return;
+                        }
+
+                        if (user.getPassword().equals(Encryptor.md5(password))) {
+                            loginResult.postValue(new LoginResult(new LoggedInUserView(user.getName())));
+                            return;
+                        }
+                        loginResult.postValue(new LoginResult(R.string.login_failed_password));
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d(TAG, "onError: ", e);
+                    }
+
+                    @Override
+                    public void onComplete() {
                         loginResult.postValue(new LoginResult(R.string.login_failed_username));
-                        return;
+                        Log.d(TAG, "onComplete: ");
                     }
-                    if (u.getPassword().equals(Encryptor.md5(password))) {
-                        loginResult.postValue(new LoginResult(new LoggedInUserView(u.getName())));
-                        return;
-                    }
-                    loginResult.postValue(new LoginResult(R.string.login_failed_password));
                 });
     }
 
@@ -63,14 +90,23 @@ public class LoginViewModel extends ViewModel {
         if (username == null) {
             return false;
         }
-        if (username.contains("@")) {
-            return Patterns.EMAIL_ADDRESS.matcher(username).matches();
-        } else {
-            return !username.trim().isEmpty();
-        }
+        String trimUsername = username.trim();
+        return trimUsername.length() >= 3 && trimUsername.length() <= 12;
     }
 
     private boolean isPasswordValid(String password) {
-        return password != null && password.trim().length() > 2;
+        if (password == null) {
+            return false;
+        }
+        String trimPassword = password.trim();
+        return trimPassword.length() >= 6 && trimPassword.length() <= 18;
+    }
+
+    @Override
+    protected void onCleared() {
+        if (disposable != null && !disposable.isDisposed()) {
+            disposable.dispose();
+        }
+        super.onCleared();
     }
 }
