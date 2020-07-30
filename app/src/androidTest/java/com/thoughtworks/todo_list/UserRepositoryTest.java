@@ -43,10 +43,7 @@ public class UserRepositoryTest {
 
     @Test
     public void should_find_correct_user() {
-        User savedUser = new User();
-        savedUser.setName("sjyuan");
-        savedUser.setPassword("123");
-        savedUser.setId(1);
+        User savedUser = new User(1, "xiaoming", "123456");
         appDatabase.userDBDataSource().save(savedUser).subscribeOn(Schedulers.io()).subscribe();
         userRepository.findByName("sjyuan").test()
                 .assertValue(user -> user.getId() == savedUser.getId());
