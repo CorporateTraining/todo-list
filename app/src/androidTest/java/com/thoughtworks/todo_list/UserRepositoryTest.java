@@ -45,7 +45,7 @@ public class UserRepositoryTest {
     public void should_find_correct_user() {
         User savedUser = new User(1, "xiaoming", "123456");
         appDatabase.userDBDataSource().save(savedUser).subscribeOn(Schedulers.io()).subscribe();
-        userRepository.findByName("sjyuan").test()
+        userRepository.findByName("xiaoming").test()
                 .assertValue(user -> user.getId() == savedUser.getId());
     }
 }

@@ -53,7 +53,7 @@ public class LoginActivity extends AppCompatActivity {
                 showLoginFailed(loginResult.getError());
             }
             if (loginResult.getSuccess() != null) {
-                showLoginFailed(R.string.welcome);
+                showLoginFailed(R.string.login_welcome);
                 Intent intent = new Intent(this, HomeActivity.class);
                 intent.putExtra("user", usernameEditText.getText().toString());
                 startActivity(intent);

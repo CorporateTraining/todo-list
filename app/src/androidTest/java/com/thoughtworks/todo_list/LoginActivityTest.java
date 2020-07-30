@@ -59,7 +59,7 @@ public class LoginActivityTest {
         onView(withId(R.id.username)).perform(typeText("xiaoming")).perform(closeSoftKeyboard());
         onView(withId(R.id.password)).perform(typeText("123456")).perform(closeSoftKeyboard());
         onView(withId(R.id.login)).perform(click());
-        onView(withText(R.string.welcome)).inRoot(withDecorView(not(is(mActivityRule.getActivity().getWindow().getDecorView()))))
+        onView(withText(R.string.login_welcome)).inRoot(withDecorView(not(is(mActivityRule.getActivity().getWindow().getDecorView()))))
                 .check(matches(isDisplayed()));
     }
 
