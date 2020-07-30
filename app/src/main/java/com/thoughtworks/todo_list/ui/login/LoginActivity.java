@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.thoughtworks.todo_list.MainApplication;
 import com.thoughtworks.todo_list.R;
+import com.thoughtworks.todo_list.ui.task.TaskActivity;
 
 public class LoginActivity extends AppCompatActivity {
     private LoginViewModel loginViewModel;
@@ -54,7 +55,7 @@ public class LoginActivity extends AppCompatActivity {
             }
             if (loginResult.getSuccess() != null) {
                 showLoginFailed(R.string.login_welcome);
-                Intent intent = new Intent(this, HomeActivity.class);
+                Intent intent = new Intent(this, TaskActivity.class);
                 intent.putExtra("user", usernameEditText.getText().toString());
                 startActivity(intent);
                 finish();

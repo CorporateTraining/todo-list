@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/home"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.task.TaskActivity">
+
+    <Toolbar
+        android:id="@+id/task_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/homeTitle"
+        android:theme="@style/AppTheme.ToolBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/title_layout"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/week_and_day"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:textColor="@color/colorTextBlue"
+                android:textSize="24sp"
+                app:layout_constraintStart_toStartOf="@id/title_layout"
+                app:layout_constraintTop_toTopOf="@id/title_layout" />
+
+            <TextView
+                android:id="@+id/month"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="@id/title_layout"
+                app:layout_constraintTop_toBottomOf="@id/week_and_day" />
+
+            <TextView
+                android:id="@+id/task_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="12个任务"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="@id/title_layout"
+                app:layout_constraintTop_toBottomOf="@id/week_and_day" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </Toolbar>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/my_recycle_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="100dp"
+        app:layout_constraintTop_toBottomOf="@id/task_toolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <Button
+        android:id="@+id/create_button"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_margin="20dp"
+        android:padding="0dp"
+        android:gravity="center"
+        android:text="@string/create"
+        android:textSize="35sp"
+        android:background="@drawable/create_button"
+        android:textColor="@color/colorTextWhite"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+    </Button>
+</androidx.constraintlayout.widget.ConstraintLayout>
