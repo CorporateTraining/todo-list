@@ -1,17 +1,21 @@
 package com.thoughtworks.todo_list.ui.task;
 
+import android.icu.text.SimpleDateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.thoughtworks.todo_list.R;
-import com.thoughtworks.todo_list.repository.task.Task;
+import com.thoughtworks.todo_list.repository.task.entity.Task;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
@@ -31,8 +35,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         Task itemData = itemDataList.get(position);
-        holder.setTitleText(itemData.title);
-        holder.setNumberText(String.valueOf(itemData.number));
+        Date date = itemData.getDate();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM月dd日", Locale.CHINA);
+        holder.setTitleText(itemData.getTitle());
+        holder.setDateText(simpleDateFormat.format(date));
+        holder.setIsChecked(itemData.getChecked());
     }
 
     @Override
@@ -40,21 +47,27 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         return itemDataList.size();
     }
 
-    public static class MyViewHolder extends RecyclerView.ViewHolder{
-        private TextView title, number;
+    public static class MyViewHolder extends RecyclerView.ViewHolder {
+        private TextView title, date;
+        private CheckBox isChecked;
 
         public void setTitleText(String title) {
             this.title.setText(title);
         }
 
-        public void setNumberText(String number) {
-            this.number.setText(number);
+        public void setIsChecked(Boolean isChecked) {
+            this.isChecked.setChecked(isChecked);
+        }
+
+        public void setDateText(String date) {
+            this.date.setText(date);
         }
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-            this.title = itemView.findViewById(R.id.item_content);
-            this.number = itemView.findViewById(R.id.item_date);
+            this.title = itemView.findViewById(R.id.item_title);
+            this.date = itemView.findViewById(R.id.item_date);
+            this.isChecked = itemView.findViewById(R.id.item_check_box);
         }
     }
 }

@@ -21,7 +21,6 @@ import okhttp3.Response;
 
 public class UserRepositoryImpl implements UserRepository {
     private UserDataSource dataSource;
-    private final static String URL = "https://twc-android-bootcamp.github.io/fake-data/data/user.json";
 
     public UserRepositoryImpl(UserDataSource dataSource) {
         this.dataSource = dataSource;
@@ -34,21 +33,5 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public Completable save(User user) {
         return dataSource.save(user);
-    }
-
-    @Override
-    public Maybe<User> findUserByNetwork() {
-        return Maybe.create(emitter -> {
-            OkHttpClient okHttpClient = new OkHttpClient();
-            Request request = new Request
-                    .Builder()
-                    .url(URL)
-                    .build();
-            Response response = okHttpClient.newCall(request).execute();
-            String usersData = response.body().string();
-            User user = GsonUtil.stringFromJson(usersData, User.class);
-            emitter.onSuccess(user);
-            emitter.onComplete();
-        });
     }
 }

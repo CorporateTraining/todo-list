@@ -1,25 +1,29 @@
 package com.thoughtworks.todo_list;
 
-import android.content.Context;
-import android.os.SystemClock;
-
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 
-import com.thoughtworks.todo_list.ui.login.UserRepository;
 import com.thoughtworks.todo_list.repository.user.entity.User;
 import com.thoughtworks.todo_list.repository.utils.Encryptor;
 import com.thoughtworks.todo_list.ui.login.LoginActivity;
+import com.thoughtworks.todo_list.ui.login.UserRepository;
+import com.thoughtworks.todo_list.ui.task.TaskRepository;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 
+import java.util.ArrayList;
+
+import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
 import io.reactivex.Maybe;
 import io.reactivex.MaybeObserver;
 import io.reactivex.internal.operators.maybe.MaybeCreate;
+import io.reactivex.internal.operators.single.SingleCreate;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -39,6 +43,7 @@ import static org.mockito.Mockito.when;
 @RunWith(AndroidJUnit4.class)
 public class LoginActivityTest {
     private UserRepository userRepository;
+    private TaskRepository taskRepository;
     private User user;
     private MainApplication applicationContext;
 
@@ -49,12 +54,20 @@ public class LoginActivityTest {
     public void before() {
         applicationContext = (MainApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
         userRepository = applicationContext.userRepository();
+        taskRepository = applicationContext.getTaskRepository();
         user = new User(1, "xiaoming", Encryptor.md5("123456"));
+        when(userRepository.save(ArgumentMatchers.any())).thenReturn(new Completable() {
+            @Override
+            protected void subscribeActual(CompletableObserver observer) {
+                observer.onComplete();
+            }
+        });
     }
 
     @Test
     public void should_login_successfully_when_login_given_correct_username_and_password() {
-        when(userRepository.findByName("xiaoming")).thenReturn(new MaybeCreate(emitter -> emitter.onSuccess(user)));
+        when(userRepository.findByName("xiaoming")).thenReturn(new MaybeCreate<>(emitter -> emitter.onSuccess(user)));
+        when(taskRepository.findTasks()).thenReturn(new SingleCreate<>(emitter -> emitter.onSuccess(new ArrayList<>())));
 
         onView(withId(R.id.username)).perform(typeText("xiaoming")).perform(closeSoftKeyboard());
         onView(withId(R.id.password)).perform(typeText("123456")).perform(closeSoftKeyboard());
@@ -65,7 +78,7 @@ public class LoginActivityTest {
 
     @Test
     public void should_login_failed_when_login_given_invalid_password() {
-        when(userRepository.findByName("xiaoming")).thenReturn(new MaybeCreate(emitter -> emitter.onSuccess(user)));
+        when(userRepository.findByName("xiaoming")).thenReturn(new MaybeCreate<>(emitter -> emitter.onSuccess(user)));
 
         onView(withId(R.id.username)).perform(typeText("xiaoming")).perform(closeSoftKeyboard());
         onView(withId(R.id.password)).perform(typeText("1234567")).perform(closeSoftKeyboard());

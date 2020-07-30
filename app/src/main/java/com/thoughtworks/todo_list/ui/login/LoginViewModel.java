@@ -1,6 +1,5 @@
 package com.thoughtworks.todo_list.ui.login;
 
-import android.annotation.SuppressLint;
 import android.util.Log;
 
 import androidx.lifecycle.LifecycleOwner;
@@ -11,17 +10,23 @@ import androidx.lifecycle.ViewModel;
 import com.thoughtworks.todo_list.R;
 import com.thoughtworks.todo_list.repository.user.entity.User;
 import com.thoughtworks.todo_list.repository.utils.Encryptor;
+import com.thoughtworks.todo_list.repository.utils.NetworkGetData;
 
 import io.reactivex.MaybeObserver;
+import io.reactivex.Observable;
+import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+
+import static com.thoughtworks.todo_list.repository.utils.NetworkGetData.URL;
 
 public class LoginViewModel extends ViewModel {
     private MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
     private MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
     private UserRepository userRepository;
-    private Disposable disposable;
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private final static String TAG = LoginViewModel.class.getSimpleName();
 
     void setUserRepository(UserRepository userRepository) {
@@ -36,7 +41,6 @@ public class LoginViewModel extends ViewModel {
         loginResult.observe(lifecycleOwner, observer);
     }
 
-    @SuppressLint("CheckResult")
     public void login(String username, String password) {
         userRepository.findByName(username)
                 .subscribeOn(Schedulers.io())
@@ -45,7 +49,7 @@ public class LoginViewModel extends ViewModel {
                     @Override
                     public void onSubscribe(Disposable d) {
                         Log.d(TAG, "onSubscribe: ");
-                        disposable = d;
+                        compositeDisposable.add(d);
                     }
 
                     @Override
@@ -102,10 +106,50 @@ public class LoginViewModel extends ViewModel {
         return trimPassword.length() >= 6 && trimPassword.length() <= 18;
     }
 
+    public void initUser() {
+        Observable.create((ObservableOnSubscribe<User>) emitter -> {
+            User user = NetworkGetData.getDataFromUrl(URL, User.class);
+            emitter.onNext(user);
+            emitter.onComplete();
+        }).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new io.reactivex.Observer<User>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        compositeDisposable.add(d);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d(TAG, "onError: ", e);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.d(TAG, "onComplete: ");
+                    }
+
+
+                    @Override
+                    public void onNext(User user) {
+                        Log.d(TAG, "onSuccess: ");
+                        saveUserData(user);
+                    }
+                });
+    }
+
+    public void saveUserData(User user) {
+        Disposable subscribe = userRepository.save(user)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe();
+        compositeDisposable.add(subscribe);
+    }
+
     @Override
     protected void onCleared() {
-        if (disposable != null && !disposable.isDisposed()) {
-            disposable.dispose();
+        if (compositeDisposable != null && !compositeDisposable.isDisposed()) {
+            compositeDisposable.dispose();
         }
         super.onCleared();
     }

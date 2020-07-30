@@ -103,6 +103,7 @@ public class LoginActivity extends AppCompatActivity {
         UserRepository userRepository = (((MainApplication) getApplicationContext())).userRepository();
         LoginViewModel loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
         loginViewModel.setUserRepository(userRepository);
+        loginViewModel.initUser();
         return loginViewModel;
     }
 }
