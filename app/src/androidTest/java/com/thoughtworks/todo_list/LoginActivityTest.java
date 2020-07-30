@@ -50,7 +50,7 @@ public class LoginActivityTest {
         user.setName("sjyuan");
         when(userRepository.findByName("sjyuan")).thenReturn(new MaybeCreate(emitter -> emitter.onSuccess(user)));
 
-        onView(withId(R.id.username)).perform(typeText("sjyuan"));
+        onView(withId(R.id.username)).perform(typeText("sjyuan")).perform(closeSoftKeyboard());
         onView(withId(R.id.password)).perform(typeText("123456")).perform(closeSoftKeyboard());
         onView(withId(R.id.login)).perform(click());
         onView(withText(R.string.welcome)).inRoot(withDecorView(not(is(mActivityRule.getActivity().getWindow().getDecorView()))))
@@ -67,7 +67,7 @@ public class LoginActivityTest {
         user.setName("sjyuan");
         when(userRepository.findByName("sjyuan")).thenReturn(new MaybeCreate(emitter -> emitter.onSuccess(user)));
 
-        onView(withId(R.id.username)).perform(typeText("sjyuan"));
+        onView(withId(R.id.username)).perform(typeText("sjyuan")).perform(closeSoftKeyboard());
         onView(withId(R.id.password)).perform(typeText("1234567")).perform(closeSoftKeyboard());
         onView(withId(R.id.login)).perform(click());
         onView(withText(R.string.login_failed_password)).inRoot(withDecorView(not(is(mActivityRule.getActivity().getWindow().getDecorView()))))
@@ -88,7 +88,7 @@ public class LoginActivityTest {
                 observer.onComplete();
             }
         });
-        onView(withId(R.id.username)).perform(typeText("notexist"));
+        onView(withId(R.id.username)).perform(typeText("notexist")).perform(closeSoftKeyboard());
         onView(withId(R.id.password)).perform(typeText("1234567")).perform(closeSoftKeyboard());
         onView(withId(R.id.login)).perform(click());
         onView(withText(R.string.login_failed_username)).inRoot(withDecorView(not(is(mActivityRule.getActivity().getWindow().getDecorView()))))
