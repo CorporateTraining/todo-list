@@ -13,5 +13,5 @@ public interface UserRepository {
 
     Completable save(User user);
 
-    Maybe<User> findUserByName(String username);
+    Maybe<User> findUserByNetwork();
 }

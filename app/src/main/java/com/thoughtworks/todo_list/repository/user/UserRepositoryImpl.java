@@ -12,6 +12,9 @@ import io.reactivex.MaybeEmitter;
 import io.reactivex.MaybeObserver;
 import io.reactivex.MaybeOnSubscribe;
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -34,7 +37,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Maybe<User> findUserByName(String username) {
+    public Maybe<User> findUserByNetwork() {
         return Maybe.create(emitter -> {
             OkHttpClient okHttpClient = new OkHttpClient();
             Request request = new Request
@@ -44,9 +47,7 @@ public class UserRepositoryImpl implements UserRepository {
             Response response = okHttpClient.newCall(request).execute();
             String usersData = response.body().string();
             User user = GsonUtil.stringFromJson(usersData, User.class);
-            if (username.equals(user.getName())) {
-                emitter.onSuccess(user);
-            }
+            emitter.onSuccess(user);
             emitter.onComplete();
         });
     }

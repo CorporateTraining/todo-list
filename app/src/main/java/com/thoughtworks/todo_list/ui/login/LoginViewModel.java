@@ -22,7 +22,7 @@ public class LoginViewModel extends ViewModel {
     private MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
     private UserRepository userRepository;
     private Disposable disposable;
-    private final static String TAG = "LoginViewModel";
+    private final static String TAG = LoginViewModel.class.getSimpleName();
 
     void setUserRepository(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -38,7 +38,7 @@ public class LoginViewModel extends ViewModel {
 
     @SuppressLint("CheckResult")
     public void login(String username, String password) {
-        userRepository.findUserByName(username)
+        userRepository.findByName(username)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new MaybeObserver<User>() {

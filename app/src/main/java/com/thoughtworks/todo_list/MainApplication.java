@@ -6,8 +6,12 @@ import androidx.room.Room;
 
 import com.thoughtworks.todo_list.repository.AppDatabase;
 import com.thoughtworks.todo_list.repository.user.UserDataSource;
-import com.thoughtworks.todo_list.ui.login.UserRepository;
 import com.thoughtworks.todo_list.repository.user.UserRepositoryImpl;
+import com.thoughtworks.todo_list.ui.login.UserRepository;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainApplication extends Application {
     private UserRepository userRepository;
@@ -16,6 +20,7 @@ public class MainApplication extends Application {
     public void onCreate() {
         super.onCreate();
         userRepository = new UserRepositoryImpl(userDataSource());
+        initUser();
     }
 
 
@@ -26,5 +31,25 @@ public class MainApplication extends Application {
 
     public UserRepository userRepository() {
         return userRepository;
+    }
+
+    public void initUser() {
+        Disposable subscribe = userRepository.findUserByNetwork()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(user -> {
+                    Disposable disposable = userRepository.save(user)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe();
+                    closeDisposable(disposable);
+                });
+        closeDisposable(subscribe);
+    }
+
+    private void closeDisposable(Disposable disposable) {
+        if (disposable != null && !disposable.isDisposed()) {
+            disposable.dispose();
+        }
     }
 }
