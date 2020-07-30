@@ -53,6 +53,7 @@ public class LoginActivity extends AppCompatActivity {
                 showLoginFailed(loginResult.getError());
             }
             if (loginResult.getSuccess() != null) {
+                showLoginFailed(R.string.welcome);
                 Intent intent = new Intent(this, HomeActivity.class);
                 intent.putExtra("user", usernameEditText.getText().toString());
                 startActivity(intent);
@@ -95,6 +96,7 @@ public class LoginActivity extends AppCompatActivity {
     private void showLoginFailed(Integer errorString) {
         Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
     }
+
 
     private LoginViewModel obtainViewModel() {
         UserRepository userRepository = (((MainApplication) getApplicationContext())).userRepository();

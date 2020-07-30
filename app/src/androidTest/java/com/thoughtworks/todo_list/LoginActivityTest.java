@@ -1,5 +1,7 @@
 package com.thoughtworks.todo_list;
 
+import android.os.SystemClock;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
@@ -19,6 +21,7 @@ import io.reactivex.internal.operators.maybe.MaybeCreate;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
@@ -48,9 +51,9 @@ public class LoginActivityTest {
         when(userRepository.findByName("sjyuan")).thenReturn(new MaybeCreate(emitter -> emitter.onSuccess(user)));
 
         onView(withId(R.id.username)).perform(typeText("sjyuan"));
-        onView(withId(R.id.password)).perform(typeText("123456"));
+        onView(withId(R.id.password)).perform(typeText("123456")).perform(closeSoftKeyboard());
         onView(withId(R.id.login)).perform(click());
-        onView(withText("Welcome !sjyuan")).inRoot(withDecorView(not(is(mActivityRule.getActivity().getWindow().getDecorView()))))
+        onView(withText(R.string.welcome)).inRoot(withDecorView(not(is(mActivityRule.getActivity().getWindow().getDecorView()))))
                 .check(matches(isDisplayed()));
     }
 
@@ -60,12 +63,12 @@ public class LoginActivityTest {
         UserRepository userRepository = applicationContext.userRepository();
         User user = new User();
         user.setId(1);
-        user.setPassword(Encryptor.md5("12345"));
+        user.setPassword(Encryptor.md5("123456"));
         user.setName("sjyuan");
         when(userRepository.findByName("sjyuan")).thenReturn(new MaybeCreate(emitter -> emitter.onSuccess(user)));
 
         onView(withId(R.id.username)).perform(typeText("sjyuan"));
-        onView(withId(R.id.password)).perform(typeText("123456"));
+        onView(withId(R.id.password)).perform(typeText("1234567")).perform(closeSoftKeyboard());
         onView(withId(R.id.login)).perform(click());
         onView(withText(R.string.login_failed_password)).inRoot(withDecorView(not(is(mActivityRule.getActivity().getWindow().getDecorView()))))
                 .check(matches(isDisplayed()));
@@ -77,7 +80,7 @@ public class LoginActivityTest {
         UserRepository userRepository = applicationContext.userRepository();
         User user = new User();
         user.setId(1);
-        user.setPassword("12345");
+        user.setPassword("1234567");
         user.setName("sjyuan");
         when(userRepository.findByName("notexist")).thenReturn(new Maybe<User>() {
             @Override
@@ -86,7 +89,7 @@ public class LoginActivityTest {
             }
         });
         onView(withId(R.id.username)).perform(typeText("notexist"));
-        onView(withId(R.id.password)).perform(typeText("12345"));
+        onView(withId(R.id.password)).perform(typeText("1234567")).perform(closeSoftKeyboard());
         onView(withId(R.id.login)).perform(click());
         onView(withText(R.string.login_failed_username)).inRoot(withDecorView(not(is(mActivityRule.getActivity().getWindow().getDecorView()))))
                 .check(matches(isDisplayed()));
