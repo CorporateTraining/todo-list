@@ -34,22 +34,14 @@ public class MainApplication extends Application {
     }
 
     public void initUser() {
-        Disposable subscribe = userRepository.findUserByNetwork()
+        userRepository.findUserByNetwork()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(user -> {
-                    Disposable disposable = userRepository.save(user)
+                    userRepository.save(user)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe();
-                    closeDisposable(disposable);
-                });
-        closeDisposable(subscribe);
-    }
-
-    private void closeDisposable(Disposable disposable) {
-        if (disposable != null && !disposable.isDisposed()) {
-            disposable.dispose();
-        }
+                }).dispose();
     }
 }
