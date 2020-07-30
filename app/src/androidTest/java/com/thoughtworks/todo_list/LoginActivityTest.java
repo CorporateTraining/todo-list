@@ -49,7 +49,7 @@ public class LoginActivityTest {
     public void before() {
         applicationContext = (MainApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
         userRepository = applicationContext.userRepository();
-        user = new User(1, "xiaoming", "123456");
+        user = new User(1, "xiaoming", Encryptor.md5("123456"));
     }
 
     @Test

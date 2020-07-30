@@ -6,6 +6,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.thoughtworks.todo_list.repository.AppDatabase;
+import com.thoughtworks.todo_list.repository.utils.Encryptor;
 import com.thoughtworks.todo_list.ui.login.UserRepository;
 import com.thoughtworks.todo_list.repository.user.UserRepositoryImpl;
 import com.thoughtworks.todo_list.repository.user.entity.User;
@@ -43,7 +44,7 @@ public class UserRepositoryTest {
 
     @Test
     public void should_find_correct_user() {
-        User savedUser = new User(1, "xiaoming", "123456");
+        User savedUser = new User(1, "xiaoming", Encryptor.md5("123456"));
         appDatabase.userDBDataSource().save(savedUser).subscribeOn(Schedulers.io()).subscribe();
         userRepository.findByName("xiaoming").test()
                 .assertValue(user -> user.getId() == savedUser.getId());
