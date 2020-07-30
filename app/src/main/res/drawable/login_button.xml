@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <corners android:radius="10dp"/>
-    <solid android:color="@color/colorLoginButton"/>
-</shape>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="@color/colorTextWhite" android:state_enabled="true">
+        <shape android:shape="rectangle">
+            <corners android:radius="10dp" />
+            <solid android:color="@color/colorLoginButton" />
+        </shape>
+    </item>
+    <item android:color="@color/colorTextBlack" android:state_enabled="false">
+        <shape android:shape="rectangle">
+            <corners android:radius="10dp" />
+            <solid android:color="@color/loginButtonEnabled" />
+        </shape>
+    </item>
+</selector>

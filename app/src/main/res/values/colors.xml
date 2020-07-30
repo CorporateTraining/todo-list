@@ -3,6 +3,9 @@
     <color name="colorPrimary">#6200EE</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
-    <color name="colorLoginButton">#257CED</color>
-    <color name="colorText">#FFFFFF</color>
+    <color name="colorLoginButton">#41a6f5</color>
+    <color name="loginButtonEnabled">#f5f5f5</color>
+    <color name="colorTextWhite">#FFFFFF</color>
+    <color name="colorTextBlack">#FF000000</color>
+    <color name="homeTitle">#FFFCFC</color>
 </resources>
