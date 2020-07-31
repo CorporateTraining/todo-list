@@ -70,12 +70,11 @@
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="20dp"
         android:gravity="center"
-        android:text="@string/create"
         android:textSize="30sp"
+
         android:background="@drawable/create_button"
         android:textColor="@color/colorTextWhite"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
-
     </Button>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <corners android:radius="25dp"/>
-    <solid android:color="@color/colorLoginButton"/>
-</shape>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape>
+            <corners android:radius="25dp" />
+            <solid android:color="@color/colorLoginButton" />
+        </shape>
+    </item>
+    <item android:drawable="@drawable/ic_baseline_add_24">
+    </item>
+</layer-list>
