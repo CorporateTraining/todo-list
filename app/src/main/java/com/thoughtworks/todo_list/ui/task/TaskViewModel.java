@@ -9,7 +9,9 @@ import androidx.lifecycle.ViewModel;
 
 import com.thoughtworks.todo_list.repository.task.model.TaskModel;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
@@ -38,7 +40,20 @@ public class TaskViewModel extends ViewModel {
 
     public void getTasks() {
         Single<List<TaskModel>> tasks = taskRepository.findTasks();
-        tasks.subscribeOn(Schedulers.io())
+        tasks.map(taskModels -> {
+            Comparator<TaskModel> reversedChecked = ((Comparator<TaskModel>) (taskModel1, taskModel2) -> {
+                Boolean checked1 = taskModel1.getChecked();
+                Boolean checked2 = taskModel2.getChecked();
+                if (checked1 ^ checked2) {
+                    return checked1 ? -1 : 1;
+                } else {
+                    return 0;
+                }
+            }).reversed();
+            Comparator<TaskModel> reversedData = Comparator.comparing(TaskModel::getDate);
+            return taskModels.stream().sorted(reversedChecked.thenComparing(reversedData))
+                    .collect(Collectors.toList());
+        }).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<List<TaskModel>>() {
                     @Override

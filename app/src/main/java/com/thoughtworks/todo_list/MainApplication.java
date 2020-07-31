@@ -11,11 +11,6 @@ import com.thoughtworks.todo_list.repository.user.UserRepositoryImpl;
 import com.thoughtworks.todo_list.ui.login.UserRepository;
 import com.thoughtworks.todo_list.ui.task.TaskRepository;
 
-import java.util.Date;
-
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
-
 public class MainApplication extends Application {
     private AppDatabase appDatabase;
     private UserRepository userRepository;
