@@ -17,6 +17,12 @@ import androidx.lifecycle.ViewModelProvider;
 import com.thoughtworks.todo_list.MainApplication;
 import com.thoughtworks.todo_list.R;
 import com.thoughtworks.todo_list.ui.task.TaskActivity;
+import com.thoughtworks.todo_list.ui.utils.Validator;
+
+import org.jetbrains.annotations.NotNull;
+
+import static com.thoughtworks.todo_list.ui.utils.Validator.PASSWORD_REGULAR;
+import static com.thoughtworks.todo_list.ui.utils.Validator.USERNAME_REGULAR;
 
 public class LoginActivity extends AppCompatActivity {
     private LoginViewModel loginViewModel;
@@ -32,19 +38,6 @@ public class LoginActivity extends AppCompatActivity {
         final Button loginButton = findViewById(R.id.login);
         final ProgressBar loadingProgressBar = findViewById(R.id.loading);
 
-        loginViewModel.observeLoginFormState(this, loginFormState -> {
-            if (loginFormState == null) {
-                return;
-            }
-            loginButton.setEnabled(loginFormState.isDataValid());
-            if (loginFormState.getUsernameError() != null) {
-                usernameEditText.setError(getString(loginFormState.getUsernameError()));
-            }
-            if (loginFormState.getPasswordError() != null) {
-                passwordEditText.setError(getString(loginFormState.getPasswordError()));
-            }
-        });
-
         loginViewModel.observeLoginResult(this, loginResult -> {
             if (loginResult == null) {
                 return;
@@ -56,27 +49,12 @@ public class LoginActivity extends AppCompatActivity {
             if (loginResult.getSuccess() != null) {
                 showLoginFailed(R.string.login_welcome);
                 Intent intent = new Intent(this, TaskActivity.class);
-                intent.putExtra("user", usernameEditText.getText().toString());
                 startActivity(intent);
                 finish();
             }
         });
 
-        TextWatcher afterTextChangedListener = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                loginViewModel.loginDataChanged(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
-            }
-        };
+        TextWatcher afterTextChangedListener = getAfterTextChangedListener(usernameEditText, passwordEditText, loginButton);
         usernameEditText.addTextChangedListener(afterTextChangedListener);
         passwordEditText.addTextChangedListener(afterTextChangedListener);
         passwordEditText.setOnEditorActionListener((v, actionId, event) -> {
@@ -93,6 +71,33 @@ public class LoginActivity extends AppCompatActivity {
                     passwordEditText.getText().toString());
         });
     }
+    @NotNull
+    private TextWatcher getAfterTextChangedListener(EditText usernameEditText, EditText passwordEditText, Button loginButton) {
+        return new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String username = usernameEditText.getText().toString();
+                String password = passwordEditText.getText().toString();
+                if (isTextValueInvalid(USERNAME_REGULAR, username)) {
+                    loginButton.setEnabled(false);
+                    usernameEditText.setError(getString(R.string.invalid_username));
+                    } else if (isTextValueInvalid(PASSWORD_REGULAR, password)) {
+                    loginButton.setEnabled(false);
+                    passwordEditText.setError(getString(R.string.invalid_password));
+                } else {
+                    loginButton.setEnabled(true);
+                }
+            }
+        };
+    }
 
     private void showLoginFailed(Integer errorString) {
         Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
@@ -103,7 +108,13 @@ public class LoginActivity extends AppCompatActivity {
         UserRepository userRepository = (((MainApplication) getApplicationContext())).userRepository();
         LoginViewModel loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
         loginViewModel.setUserRepository(userRepository);
-        loginViewModel.initUser();
         return loginViewModel;
+    }
+
+    private boolean isTextValueInvalid(String regular, String text) {
+        if (text == null) {
+            return true;
+        }
+        return !Validator.isValid(regular, text.trim());
     }
 }

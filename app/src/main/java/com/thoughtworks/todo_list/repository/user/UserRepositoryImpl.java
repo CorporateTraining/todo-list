@@ -1,23 +1,14 @@
 package com.thoughtworks.todo_list.repository.user;
 
 import com.thoughtworks.todo_list.repository.user.entity.User;
-import com.thoughtworks.todo_list.repository.utils.GsonUtil;
+import com.thoughtworks.todo_list.repository.user.model.UserModel;
+import com.thoughtworks.todo_list.repository.utils.NetworkGetData;
 import com.thoughtworks.todo_list.ui.login.UserRepository;
-
-import java.util.List;
 
 import io.reactivex.Completable;
 import io.reactivex.Maybe;
-import io.reactivex.MaybeEmitter;
-import io.reactivex.MaybeObserver;
-import io.reactivex.MaybeOnSubscribe;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+
+import static com.thoughtworks.todo_list.repository.utils.NetworkGetData.URL;
 
 public class UserRepositoryImpl implements UserRepository {
     private UserDataSource dataSource;
@@ -26,12 +17,22 @@ public class UserRepositoryImpl implements UserRepository {
         this.dataSource = dataSource;
     }
 
-    public Maybe<User> findByName(String name) {
-        return dataSource.findByName(name);
+    public Maybe<UserModel> findByName(String name) {
+        return dataSource.findByName(name).map(user -> new UserModel().build(user));
     }
 
     @Override
-    public Completable save(User user) {
+    public Completable save(UserModel userModel) {
+        User user = new User().build(userModel);
         return dataSource.save(user);
+    }
+
+    @Override
+    public Maybe<UserModel> getUserByNetwork() {
+        return Maybe.create(emitter -> {
+            UserModel userModel = NetworkGetData.getDataFromUrl(URL, UserModel.class);
+            emitter.onSuccess(userModel);
+            emitter.onComplete();
+        });
     }
 }

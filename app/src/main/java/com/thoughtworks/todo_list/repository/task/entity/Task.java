@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import com.thoughtworks.todo_list.repository.task.model.TaskRequest;
+
 import java.util.Date;
 import java.util.UUID;
 
@@ -19,14 +21,7 @@ public class Task {
     private Boolean isChecked;
     private Boolean isRemind;
 
-    public Task(String title, String description, Date date, Date createDate, Boolean isChecked, Boolean isRemind) {
-        this.id = UUID.randomUUID().toString();
-        this.title = title;
-        this.description = description;
-        this.date = date;
-        this.createDate = createDate;
-        this.isChecked = isChecked;
-        this.isRemind = isRemind;
+    public Task() {
     }
 
     @NonNull
@@ -36,6 +31,30 @@ public class Task {
 
     public void setId(@NonNull String id) {
         this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    public Boolean getChecked() {
+        return isChecked;
+    }
+
+    public Boolean getRemind() {
+        return isRemind;
     }
 
     public void setTitle(String title) {
@@ -62,27 +81,26 @@ public class Task {
         isRemind = remind;
     }
 
-    public String getTitle() {
-        return title;
+    public Task build(TaskRequest task) {
+        this.id = task.getId();
+        this.title = task.getTitle();
+        this.description = task.getDescription();
+        this.date = task.getDate();
+        this.createDate = task.getCreateDate();
+        this.isChecked = task.getChecked();
+        this.isRemind = task.getRemind();
+        return this;
     }
 
-    public String getDescription() {
-        return description;
+    public Task create(TaskRequest task) {
+        this.id = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+        this.title = task.getTitle();
+        this.description = task.getDescription();
+        this.date = task.getDate();
+        this.createDate = new Date();
+        this.isChecked = task.getChecked();
+        this.isRemind = task.getRemind();
+        return this;
     }
 
-    public Date getDate() {
-        return date;
-    }
-
-    public Date getCreateDate() {
-        return createDate;
-    }
-
-    public Boolean getChecked() {
-        return isChecked;
-    }
-
-    public Boolean getRemind() {
-        return isRemind;
-    }
 }

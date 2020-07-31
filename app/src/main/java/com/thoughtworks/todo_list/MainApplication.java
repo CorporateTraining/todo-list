@@ -9,6 +9,7 @@ import com.thoughtworks.todo_list.repository.AppDatabase;
 import com.thoughtworks.todo_list.repository.task.TaskDataSource;
 import com.thoughtworks.todo_list.repository.task.TaskRepositoryImpl;
 import com.thoughtworks.todo_list.repository.task.entity.Task;
+import com.thoughtworks.todo_list.repository.task.model.TaskRequest;
 import com.thoughtworks.todo_list.repository.user.UserDataSource;
 import com.thoughtworks.todo_list.repository.user.UserRepositoryImpl;
 import com.thoughtworks.todo_list.ui.login.UserRepository;
@@ -30,7 +31,6 @@ public class MainApplication extends Application {
         appDatabase = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, this.getClass().getSimpleName()).build();
         userRepository = new UserRepositoryImpl(appDatabase.userDBDataSource());
         taskRepository = new TaskRepositoryImpl(appDatabase.taskDataSource());
-        initTask();
     }
 
     public UserRepository userRepository() {
@@ -40,14 +40,11 @@ public class MainApplication extends Application {
     public TaskRepository getTaskRepository() {
         return taskRepository;
     }
-    public void initTask() {
-        for (int i = 0; i < 10; i++) {
-            Date date = new Date();
-            Task task = new Task("title" + i, "description", date, date, i <= 6, true);
-            taskRepository.save(task)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe();
-        }
+
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+        appDatabase.close();
     }
+
 }

@@ -1,23 +1,22 @@
 package com.thoughtworks.todo_list.ui.task;
 
-import com.thoughtworks.todo_list.repository.task.entity.Task;
-import com.thoughtworks.todo_list.repository.user.entity.User;
+import com.thoughtworks.todo_list.repository.task.model.TaskRequest;
+import com.thoughtworks.todo_list.repository.task.model.TaskResponse;
 
 import java.util.List;
 
 import io.reactivex.Completable;
-import io.reactivex.Flowable;
 import io.reactivex.Maybe;
 import io.reactivex.Single;
 
 public interface TaskRepository {
-    Maybe<Task> findById(String taskId);
+    Maybe<TaskResponse> findById(String taskId);
 
-    Single<List<Task>> findTasks();
+    Single<List<TaskResponse>> findTasks();
 
-    Completable deleteTask(Task task);
+    Completable deleteTask(TaskRequest task);
 
-    Completable updateTask(Task task);
+    Completable updateTask(TaskRequest task);
 
-    Completable save(Task task);
+    Completable save(TaskRequest task);
 }

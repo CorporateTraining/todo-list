@@ -1,5 +1,6 @@
 package com.thoughtworks.todo_list.ui.task;
 
+import android.graphics.Paint;
 import android.icu.text.SimpleDateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.thoughtworks.todo_list.R;
-import com.thoughtworks.todo_list.repository.task.entity.Task;
+import com.thoughtworks.todo_list.repository.task.model.TaskResponse;
 
 import java.util.Date;
 import java.util.List;
@@ -19,9 +20,9 @@ import java.util.Locale;
 
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
-    private List<Task> itemDataList;
+    private List<TaskResponse> itemDataList;
 
-    public MyAdapter(List<Task> itemDataList) {
+    public MyAdapter(List<TaskResponse> itemDataList) {
         this.itemDataList = itemDataList;
     }
 
@@ -34,10 +35,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        Task itemData = itemDataList.get(position);
+        TaskResponse itemData = itemDataList.get(position);
         Date date = itemData.getDate();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM月dd日", Locale.CHINA);
         holder.setTitleText(itemData.getTitle());
+        if(itemData.getChecked()){
+            holder.title.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+        }
         holder.setDateText(simpleDateFormat.format(date));
         holder.setIsChecked(itemData.getChecked());
     }
@@ -54,6 +58,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         public void setTitleText(String title) {
             this.title.setText(title);
         }
+
 
         public void setIsChecked(Boolean isChecked) {
             this.isChecked.setChecked(isChecked);

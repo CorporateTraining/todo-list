@@ -4,7 +4,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 
-import com.thoughtworks.todo_list.repository.user.entity.User;
+import com.thoughtworks.todo_list.repository.user.model.UserModel;
 import com.thoughtworks.todo_list.repository.utils.Encryptor;
 import com.thoughtworks.todo_list.ui.login.LoginActivity;
 import com.thoughtworks.todo_list.ui.login.UserRepository;
@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 public class LoginActivityTest {
     private UserRepository userRepository;
     private TaskRepository taskRepository;
-    private User user;
+    private UserModel user;
     private MainApplication applicationContext;
 
     @Rule
@@ -55,7 +55,7 @@ public class LoginActivityTest {
         applicationContext = (MainApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
         userRepository = applicationContext.userRepository();
         taskRepository = applicationContext.getTaskRepository();
-        user = new User(1, "xiaoming", Encryptor.md5("123456"));
+        user = new UserModel(1, "xiaoming", Encryptor.md5("123456"));
         when(userRepository.save(ArgumentMatchers.any())).thenReturn(new Completable() {
             @Override
             protected void subscribeActual(CompletableObserver observer) {
@@ -89,12 +89,13 @@ public class LoginActivityTest {
 
     @Test
     public void should_login_failed_when_login_given_username_does_not_exist() {
-        when(userRepository.findByName("notexist")).thenReturn(new Maybe<User>() {
+        when(userRepository.findByName("notexist")).thenReturn(new Maybe<UserModel>() {
             @Override
-            protected void subscribeActual(MaybeObserver<? super User> observer) {
+            protected void subscribeActual(MaybeObserver<? super UserModel> observer) {
                 observer.onComplete();
             }
         });
+        when(userRepository.getUserByNetwork()).thenReturn(new MaybeCreate<>(emitter -> emitter.onSuccess(user)));
         onView(withId(R.id.username)).perform(typeText("notexist")).perform(closeSoftKeyboard());
         onView(withId(R.id.password)).perform(typeText("1234567")).perform(closeSoftKeyboard());
         onView(withId(R.id.login)).perform(click());
@@ -104,9 +105,9 @@ public class LoginActivityTest {
 
     @Test
     public void should_login_failed_when_login_given_username_invalid() {
-        when(userRepository.findByName("notexist")).thenReturn(new Maybe<User>() {
+        when(userRepository.findByName("notexist")).thenReturn(new Maybe<UserModel>() {
             @Override
-            protected void subscribeActual(MaybeObserver<? super User> observer) {
+            protected void subscribeActual(MaybeObserver<? super UserModel> observer) {
                 observer.onComplete();
             }
         });
@@ -116,9 +117,9 @@ public class LoginActivityTest {
 
     @Test
     public void should_login_failed_when_login_given_password_invalid() {
-        when(userRepository.findByName("notexist")).thenReturn(new Maybe<User>() {
+        when(userRepository.findByName("notexist")).thenReturn(new Maybe<UserModel>() {
             @Override
-            protected void subscribeActual(MaybeObserver<? super User> observer) {
+            protected void subscribeActual(MaybeObserver<? super UserModel> observer) {
                 observer.onComplete();
             }
         });

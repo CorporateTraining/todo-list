@@ -3,6 +3,7 @@ package com.thoughtworks.todo_list.ui.task;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toolbar;
 
@@ -21,6 +22,7 @@ import java.util.Date;
 public class TaskActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private TextView weekAndDay, month, taskNumber;
+    private CheckBox itemCheckBox;
     private RecyclerView recyclerView;
     private MyAdapter myAdapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -33,6 +35,7 @@ public class TaskActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.task_toolbar);
         toolbar.inflateMenu(R.menu.home_menu);
         weekAndDay = findViewById(R.id.week_and_day);
+        itemCheckBox = findViewById(R.id.item_check_box);
         month = findViewById(R.id.month);
         taskNumber = findViewById(R.id.task_number);
         setDateToTitle();
@@ -47,6 +50,8 @@ public class TaskActivity extends AppCompatActivity {
             recyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
             taskNumber.setText(String.format("%s个任务", tasks.size()));
         });
+
+//        itemCheckBox.setOnCheckedChangeListener(new );
 
         taskViewModel.getTasks();
         userLogout();

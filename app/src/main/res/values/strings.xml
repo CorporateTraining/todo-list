@@ -15,4 +15,5 @@
     <string name="logout">登出</string>
     <string name="title">标题</string>
     <string name="create">+</string>
+    <string name="logo">logo</string>
 </resources>

@@ -13,8 +13,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class GsonUtil {
+    public static Gson gson = new Gson();
     public static <T> T stringFromJson(String json, Class<T> clazz) {
-        Gson gson = new Gson();
         return gson.fromJson(json, clazz);
     }
 }
