@@ -1,16 +1,12 @@
 package com.thoughtworks.todo_list;
 
 import android.app.Application;
-import android.icu.text.SimpleDateFormat;
 
 import androidx.room.Room;
 
 import com.thoughtworks.todo_list.repository.AppDatabase;
-import com.thoughtworks.todo_list.repository.task.TaskDataSource;
 import com.thoughtworks.todo_list.repository.task.TaskRepositoryImpl;
-import com.thoughtworks.todo_list.repository.task.entity.Task;
-import com.thoughtworks.todo_list.repository.task.model.TaskRequest;
-import com.thoughtworks.todo_list.repository.user.UserDataSource;
+import com.thoughtworks.todo_list.repository.task.model.TaskModel;
 import com.thoughtworks.todo_list.repository.user.UserRepositoryImpl;
 import com.thoughtworks.todo_list.ui.login.UserRepository;
 import com.thoughtworks.todo_list.ui.task.TaskRepository;
@@ -31,6 +27,7 @@ public class MainApplication extends Application {
         appDatabase = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, this.getClass().getSimpleName()).build();
         userRepository = new UserRepositoryImpl(appDatabase.userDBDataSource());
         taskRepository = new TaskRepositoryImpl(appDatabase.taskDataSource());
+        initTask();
     }
 
     public UserRepository userRepository() {
@@ -47,4 +44,14 @@ public class MainApplication extends Application {
         appDatabase.close();
     }
 
+    public void initTask() {
+        for (int i = 0; i < 10; i++) {
+            Date date = new Date();
+            TaskModel task = new TaskModel("大家好，今天中午吃大餐" + i, "description", date, date, i <= 6, true);
+            taskRepository.save(task)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe();
+        }
+    }
 }

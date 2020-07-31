@@ -8,6 +8,8 @@
     <color name="loginButtonEnabled">#f5f5f5</color>
     <color name="colorTextWhite">#FFFFFF</color>
     <color name="colorTextBlack">#FF000000</color>
+    <color name="colorTextGray">#FF888888</color>
+    <color name="colorTextDeleteGray">#D3D3D3</color>
     <color name="homeTitle">#FFFAFA</color>
     <color name="itemBorder">#CCD1D1</color>
 </resources>

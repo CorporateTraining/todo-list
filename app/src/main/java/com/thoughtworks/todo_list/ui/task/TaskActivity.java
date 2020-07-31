@@ -45,14 +45,11 @@ public class TaskActivity extends AppCompatActivity {
             recyclerView.setHasFixedSize(true);
             layoutManager = new LinearLayoutManager(this);
             recyclerView.setLayoutManager(layoutManager);
-            myAdapter = new MyAdapter(tasks);
+            myAdapter = new MyAdapter(tasks, taskViewModel);
             recyclerView.setAdapter(myAdapter);
             recyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
             taskNumber.setText(String.format("%s个任务", tasks.size()));
         });
-
-//        itemCheckBox.setOnCheckedChangeListener(new );
-
         taskViewModel.getTasks();
         userLogout();
     }

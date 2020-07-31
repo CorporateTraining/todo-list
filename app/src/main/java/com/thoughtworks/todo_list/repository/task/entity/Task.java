@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-import com.thoughtworks.todo_list.repository.task.model.TaskRequest;
+import com.thoughtworks.todo_list.repository.task.model.TaskModel;
 
 import java.util.Date;
 import java.util.UUID;
@@ -81,7 +81,7 @@ public class Task {
         isRemind = remind;
     }
 
-    public Task build(TaskRequest task) {
+    public Task build(TaskModel task) {
         this.id = task.getId();
         this.title = task.getTitle();
         this.description = task.getDescription();
@@ -92,7 +92,7 @@ public class Task {
         return this;
     }
 
-    public Task create(TaskRequest task) {
+    public Task create(TaskModel task) {
         this.id = UUID.randomUUID().toString().replace("-", "").toLowerCase();
         this.title = task.getTitle();
         this.description = task.getDescription();

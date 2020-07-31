@@ -1,8 +1,7 @@
 package com.thoughtworks.todo_list.repository.task;
 
 import com.thoughtworks.todo_list.repository.task.entity.Task;
-import com.thoughtworks.todo_list.repository.task.model.TaskRequest;
-import com.thoughtworks.todo_list.repository.task.model.TaskResponse;
+import com.thoughtworks.todo_list.repository.task.model.TaskModel;
 import com.thoughtworks.todo_list.ui.task.TaskRepository;
 
 import java.util.ArrayList;
@@ -19,37 +18,37 @@ public class TaskRepositoryImpl implements TaskRepository {
         this.dataSource = dataSource;
     }
 
-    public Maybe<TaskResponse> findById(String name) {
-        return dataSource.findById(name).map(task -> new TaskResponse().build(task));
+    public Maybe<TaskModel> findById(String name) {
+        return dataSource.findById(name).map(task -> new TaskModel().build(task));
     }
 
     @Override
-    public Single<List<TaskResponse>> findTasks() {
+    public Single<List<TaskModel>> findTasks() {
         return dataSource.findTasks().map(tasks -> {
-            List<TaskResponse> taskResponses = new ArrayList<>();
+            List<TaskModel> taskRespons = new ArrayList<>();
             for (Task task : tasks) {
-                TaskResponse taskResponse = new TaskResponse().build(task);
-                taskResponses.add(taskResponse);
+                TaskModel taskModel = new TaskModel().build(task);
+                taskRespons.add(taskModel);
             }
-            return taskResponses;
+            return taskRespons;
         });
     }
 
     @Override
-    public Completable deleteTask(TaskRequest taskRequest) {
-        Task task = new Task().build(taskRequest);
+    public Completable deleteTask(TaskModel taskModel) {
+        Task task = new Task().build(taskModel);
         return dataSource.deleteTask(task);
     }
 
     @Override
-    public Completable updateTask(TaskRequest taskRequest) {
-        Task task = new Task().build(taskRequest);
+    public Completable updateTask(TaskModel taskModel) {
+        Task task = new Task().build(taskModel);
         return dataSource.updateTask(task);
     }
 
     @Override
-    public Completable save(TaskRequest taskRequest) {
-        Task task = new Task().create(taskRequest);
+    public Completable save(TaskModel taskModel) {
+        Task task = new Task().create(taskModel);
         return dataSource.save(task);
     }
 }
