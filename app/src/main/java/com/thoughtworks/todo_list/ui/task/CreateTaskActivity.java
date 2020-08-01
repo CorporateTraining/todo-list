@@ -3,6 +3,8 @@ package com.thoughtworks.todo_list.ui.task;
 import android.content.Intent;
 import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CalendarView;
@@ -34,6 +36,8 @@ public class CreateTaskActivity extends AppCompatActivity {
     private CalendarView calendarView;
     private Button createSubmit;
     private TaskViewModel taskViewModel;
+    private Boolean hasDate = false;
+    private Boolean hasTitle = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,14 +57,30 @@ public class CreateTaskActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> finish());
         calendarView.setVisibility(View.INVISIBLE);
         createSubmit.setEnabled(false);
+        createTitle.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                hasTitle = createTitle.getText().toString().length() > 0;
+                createSubmit.setEnabled(hasTitle && hasDate);
+            }
+        });
         createDateInfo.setOnClickListener(view -> {
             this.calendarView.setVisibility(View.VISIBLE);
-            createSubmit.setEnabled(true);
         });
         calendarView.setOnDateChangeListener((calendarView, year, month, day) -> {
             this.calendarView.setVisibility(View.INVISIBLE);
             this.createDateInfo.setText(String.format("%s年%s月%s日", year, month + 1, day));
             this.createDateInfo.setTextColor(ContextCompat.getColor(this, R.color.colorTextBlue));
+            createSubmit.setEnabled(hasTitle);
+            hasDate = true;
         });
         createSubmit.setOnClickListener(view -> {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(" yyyy年MM月dd日", Locale.CHINA);

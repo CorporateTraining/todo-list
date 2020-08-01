@@ -1,7 +1,6 @@
 package com.thoughtworks.todo_list.ui.task;
 
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.MutableLiveData;
@@ -13,8 +12,6 @@ import com.thoughtworks.todo_list.ui.task.model.TaskModel;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import javax.security.auth.callback.Callback;
 
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
@@ -53,8 +50,8 @@ public class TaskViewModel extends ViewModel {
             }).reversed();
             Comparator<TaskModel> reversedData = Comparator.comparing(TaskModel::getDate);
             return taskModels.stream().sorted(reversedChecked.thenComparing(reversedData))
-                    .collect(Collectors.toList());
-        }).subscribeOn(Schedulers.io())
+                    .collect(Collectors.toList()); })
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new SingleObserver<List<TaskModel>>() {
                     @Override
@@ -114,7 +111,6 @@ public class TaskViewModel extends ViewModel {
                     @Override
                     public void onComplete() {
                         Log.d(TAG, "onSuccess: save");
-                        getTasks();
                     }
 
                     @Override
