@@ -88,6 +88,19 @@
         />
     </LinearLayout>
     <Button
+        android:id="@+id/delete_button"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
+        android:gravity="center"
+        android:visibility="invisible"
+        android:background="@drawable/delete_task"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/create_button"
+        app:layout_constraintEnd_toEndOf="parent">
+    </Button>
+    <Button
         android:id="@+id/create_button"
         android:layout_width="50dp"
         android:layout_height="50dp"
@@ -95,7 +108,6 @@
         android:layout_marginBottom="20dp"
         android:gravity="center"
         android:background="@drawable/create_success"
-        android:textColor="@color/colorTextWhite"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
     </Button>

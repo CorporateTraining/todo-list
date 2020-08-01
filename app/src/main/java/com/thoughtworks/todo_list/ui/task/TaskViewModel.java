@@ -97,6 +97,29 @@ public class TaskViewModel extends ViewModel {
                 });
     }
 
+    public void deleteTask(TaskModel taskRequest){
+        Completable completable = taskRepository.deleteTask(taskRequest);
+        completable.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new CompletableObserver() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        Log.d(TAG, "onSubscribe: save");
+                        compositeDisposable.add(d);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.d(TAG, "onSuccess: save");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.d(TAG, "onError: save", e);
+                    }
+                });
+    }
+
     public void saveTask(TaskModel taskModel){
         Completable completable = taskRepository.save(taskModel);
         completable.subscribeOn(Schedulers.io())

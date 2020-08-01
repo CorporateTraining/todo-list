@@ -20,7 +20,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.thoughtworks.todo_list.MainApplication;
 import com.thoughtworks.todo_list.R;
-import com.thoughtworks.todo_list.repository.task.entity.Task;
 import com.thoughtworks.todo_list.ui.task.model.TaskModel;
 
 import java.text.ParseException;
@@ -36,7 +35,7 @@ public class CreateTaskActivity extends AppCompatActivity {
     private CheckBox createIsChecked;
     private Switch createIsRemind;
     private CalendarView calendarView;
-    private Button createSubmit;
+    private Button createSubmitButton, deleteButton;
     private TaskViewModel taskViewModel;
     private Boolean hasDate = false;
     private Boolean hasTitle = false;
@@ -53,13 +52,14 @@ public class CreateTaskActivity extends AppCompatActivity {
         createIsRemind = findViewById(R.id.create_switch);
         calendarView = findViewById(R.id.calendar_view);
         createDateInfo = findViewById(R.id.create_date_info);
-        createSubmit = findViewById(R.id.create_button);
+        createSubmitButton = findViewById(R.id.create_button);
+        deleteButton = findViewById(R.id.delete_button);
         fillingTaskData();
 
         taskViewModel = obtainViewModel();
         toolbar.setNavigationOnClickListener(v -> finish());
         calendarView.setVisibility(View.INVISIBLE);
-        createSubmit.setEnabled(hasDate && hasTitle);
+        createSubmitButton.setEnabled(hasDate && hasTitle);
         listenerEmptyTitle();
         listenerShowCalendarView();
         listenerSelectCalendarData();
@@ -80,30 +80,40 @@ public class CreateTaskActivity extends AppCompatActivity {
                 hasDate = true;
                 hasTitle = true;
                 this.createDateInfo.setTextColor(ContextCompat.getColor(this, R.color.colorTextBlue));
+                deleteButton.setVisibility(View.VISIBLE);
+                deleteButton.setOnClickListener(view -> {
+                    taskViewModel.deleteTask(taskModel);
+                    jumpTaskPage();
+                });
             }
         }
     }
 
     private void listenerShowCalendarView() {
         createDateInfo.setOnClickListener(view -> {
-            this.calendarView.setVisibility(View.VISIBLE);
+            int visible = calendarView.getVisibility() == View.VISIBLE ? View.INVISIBLE : View.VISIBLE;
+            calendarView.setVisibility(visible);
         });
     }
 
     private void listenerSubmitTaskData() {
-        createSubmit.setOnClickListener(view -> {
+        createSubmitButton.setOnClickListener(view -> {
             try {
                 if (taskModel != null) {
                     updateTaskData();
                 } else {
                     createTaskData();
                 }
-                Intent intent = new Intent(CreateTaskActivity.this, TaskActivity.class);
-                startActivity(intent);
+                jumpTaskPage();
             } catch (ParseException e) {
                 e.printStackTrace();
             }
         });
+    }
+
+    private void jumpTaskPage() {
+        Intent intent = new Intent(CreateTaskActivity.this, TaskActivity.class);
+        startActivity(intent);
     }
 
     private void createTaskData() throws ParseException {
@@ -130,7 +140,7 @@ public class CreateTaskActivity extends AppCompatActivity {
             this.calendarView.setVisibility(View.INVISIBLE);
             this.createDateInfo.setText(String.format("%s年%s月%s日", year, month + 1, day));
             this.createDateInfo.setTextColor(ContextCompat.getColor(this, R.color.colorTextBlue));
-            createSubmit.setEnabled(hasTitle);
+            createSubmitButton.setEnabled(hasTitle);
             hasDate = true;
         });
     }
@@ -148,7 +158,7 @@ public class CreateTaskActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable editable) {
                 hasTitle = createTitle.getText().toString().length() > 0;
-                createSubmit.setEnabled(hasTitle && hasDate);
+                createSubmitButton.setEnabled(hasTitle && hasDate);
             }
         });
     }
