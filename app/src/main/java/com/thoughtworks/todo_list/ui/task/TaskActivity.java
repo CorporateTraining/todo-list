@@ -34,6 +34,7 @@ public class TaskActivity extends AppCompatActivity {
     private MyAdapter myAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private TaskViewModel taskViewModel;
+    private SharedPreferences preferences;
     public final static String TASK_VIEW_KEY = "TASK_MODEL_KEY";
 
     @Override
@@ -50,7 +51,7 @@ public class TaskActivity extends AppCompatActivity {
         setDateToTitle();
         taskViewModel = obtainViewModel();
         circularDisplayTask();
-        SharedPreferences preferences = getSharedPreferences(SHARED_USER, Context.MODE_PRIVATE);
+        preferences = getSharedPreferences(SHARED_USER, Context.MODE_PRIVATE);
         Integer userId = preferences.getInt(SHARED_ID, 0);
         taskViewModel.getTasks(userId);
         listenerUserLogout();
@@ -81,14 +82,22 @@ public class TaskActivity extends AppCompatActivity {
         toolbar.setOnMenuItemClickListener(menuItem -> {
             switch (menuItem.getItemId()) {
                 case R.id.logout:
-                    Intent intent = new Intent(TaskActivity.this, LoginActivity.class);
-                    startActivity(intent);
+                    removeUserInfoJumpLoginPage();
                     break;
                 default:
                     break;
             }
             return true;
         });
+    }
+
+    private void removeUserInfoJumpLoginPage() {
+        SharedPreferences.Editor edit = preferences.edit();
+        edit.remove(SHARED_ID);
+        edit.remove(SHARED_NAME);
+        edit.apply();
+        Intent intent = new Intent(TaskActivity.this, LoginActivity.class);
+        startActivity(intent);
     }
 
     private void setDateToTitle() {
