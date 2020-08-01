@@ -1,15 +1,20 @@
 package com.thoughtworks.todo_list.ui.login;
 
+import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
 import com.thoughtworks.todo_list.R;
-import com.thoughtworks.todo_list.ui.login.model.UserModel;
 import com.thoughtworks.todo_list.repository.utils.Encryptor;
+import com.thoughtworks.todo_list.ui.login.model.UserModel;
 
 import io.reactivex.MaybeObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -17,11 +22,19 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public class LoginViewModel extends ViewModel {
+import static com.thoughtworks.todo_list.ui.login.LoginActivity.SHARED_ID;
+import static com.thoughtworks.todo_list.ui.login.LoginActivity.SHARED_NAME;
+import static com.thoughtworks.todo_list.ui.login.LoginActivity.SHARED_USER;
+
+public class LoginViewModel extends AndroidViewModel {
     private MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
     private UserRepository userRepository;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private final static String TAG = "LoginViewModel";
+
+    public LoginViewModel(@NonNull Application application) {
+        super(application);
+    }
 
     void setUserRepository(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -49,6 +62,11 @@ public class LoginViewModel extends ViewModel {
                         Log.d(TAG, "onNext: ");
                         if (user.getPassword().equals(Encryptor.md5(password))) {
                             loginResult.postValue(new LoginResult(new LoggedInUserView(user.getName())));
+                            SharedPreferences preferences = getApplication().getSharedPreferences(SHARED_USER, Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = preferences.edit();
+                            editor.putInt(SHARED_ID, user.getId());
+                            editor.putString(SHARED_NAME, user.getName());
+                            editor.apply();
                             return;
                         }
                         loginResult.postValue(new LoginResult(R.string.login_failed_password));

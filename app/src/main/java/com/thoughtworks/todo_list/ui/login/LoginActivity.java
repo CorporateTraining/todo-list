@@ -1,6 +1,8 @@
 package com.thoughtworks.todo_list.ui.login;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -16,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.thoughtworks.todo_list.MainApplication;
 import com.thoughtworks.todo_list.R;
+import com.thoughtworks.todo_list.ui.login.model.UserModel;
 import com.thoughtworks.todo_list.ui.task.TaskActivity;
 import com.thoughtworks.todo_list.ui.utils.Validator;
 
@@ -29,6 +32,9 @@ public class LoginActivity extends AppCompatActivity {
     private EditText usernameEditText, passwordEditText;
     private Button loginButton;
     private ProgressBar loadingProgressBar;
+    public final static String SHARED_USER = "user";
+    public final static String SHARED_ID = "id";
+    public final static String SHARED_NAME = "name";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,16 +56,19 @@ public class LoginActivity extends AppCompatActivity {
     private void listenerLogin() {
         loginButton.setOnClickListener(v -> {
             loadingProgressBar.setVisibility(View.VISIBLE);
-            loginViewModel.login(usernameEditText.getText().toString(),
-                    passwordEditText.getText().toString());
+            login();
         });
+    }
+
+    private void login() {
+        loginViewModel.login(usernameEditText.getText().toString(),
+                passwordEditText.getText().toString());
     }
 
     private void listenerPasswordKeyboardActionDone() {
         passwordEditText.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                loginViewModel.login(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
+                login();
             }
             return false;
         });
@@ -101,7 +110,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (isTextValueInvalid(USERNAME_REGULAR, username)) {
                     loginButton.setEnabled(false);
                     usernameEditText.setError(getString(R.string.invalid_username));
-                    } else if (isTextValueInvalid(PASSWORD_REGULAR, password)) {
+                } else if (isTextValueInvalid(PASSWORD_REGULAR, password)) {
                     loginButton.setEnabled(false);
                     passwordEditText.setError(getString(R.string.invalid_password));
                 } else {

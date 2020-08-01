@@ -44,9 +44,12 @@ public class UserRepositoryTest {
 
     @Test
     public void should_find_correct_user() {
-        User savedUser = new User(1, "xiaoming", Encryptor.md5("123456"));
+        final String CREATE_USER_NAME = "xiaoming";
+         final Integer CREATE_USER_ID = 1;
+         final String CREATE_PASSWORD = "123456";
+        User savedUser = new User(CREATE_USER_ID, CREATE_USER_NAME, Encryptor.md5(CREATE_PASSWORD));
         appDatabase.userDBDataSource().save(savedUser).subscribeOn(Schedulers.io()).subscribe();
-        userRepository.findByName("xiaoming").test()
+        userRepository.findByName(CREATE_USER_NAME).test()
                 .assertValue(user -> user.getId() == savedUser.getId());
     }
 }

@@ -49,6 +49,7 @@ public class User {
     }
 
     public User build(UserModel userModel) {
+        this.id = userModel.getId();
         this.name = userModel.getName();
         this.password = userModel.getPassword();
         return this;

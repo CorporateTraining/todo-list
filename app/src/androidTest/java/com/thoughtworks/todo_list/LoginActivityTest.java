@@ -37,6 +37,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 
@@ -49,13 +50,16 @@ public class LoginActivityTest {
 
     @Rule
     public ActivityTestRule<LoginActivity> mActivityRule = new ActivityTestRule<>(LoginActivity.class);
-
+    private final String CREATE_USER_NAME = "xiaoming";
+    private final Integer CREATE_USER_ID = 1;
+    private final String CREATE_PASSWORD = "123456";
     @Before
     public void before() {
+
         applicationContext = (MainApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
         userRepository = applicationContext.userRepository();
         taskRepository = applicationContext.getTaskRepository();
-        user = new UserModel(1, "xiaoming", Encryptor.md5("123456"));
+        user = new UserModel(CREATE_USER_ID, CREATE_USER_NAME, Encryptor.md5(CREATE_PASSWORD));
         when(userRepository.save(ArgumentMatchers.any())).thenReturn(new Completable() {
             @Override
             protected void subscribeActual(CompletableObserver observer) {
@@ -66,11 +70,11 @@ public class LoginActivityTest {
 
     @Test
     public void should_login_successfully_when_login_given_correct_username_and_password() {
-        when(userRepository.findByName("xiaoming")).thenReturn(new MaybeCreate<>(emitter -> emitter.onSuccess(user)));
-        when(taskRepository.findTasks()).thenReturn(new SingleCreate<>(emitter -> emitter.onSuccess(new ArrayList<>())));
+        when(userRepository.findByName(CREATE_USER_NAME)).thenReturn(new MaybeCreate<>(emitter -> emitter.onSuccess(user)));
+        when(taskRepository.findTasks(CREATE_USER_ID)).thenReturn(new SingleCreate<>(emitter -> emitter.onSuccess(new ArrayList<>())));
 
-        onView(withId(R.id.username)).perform(typeText("xiaoming")).perform(closeSoftKeyboard());
-        onView(withId(R.id.password)).perform(typeText("123456")).perform(closeSoftKeyboard());
+        onView(withId(R.id.username)).perform(typeText(CREATE_USER_NAME)).perform(closeSoftKeyboard());
+        onView(withId(R.id.password)).perform(typeText(CREATE_PASSWORD)).perform(closeSoftKeyboard());
         onView(withId(R.id.login)).perform(click());
         onView(withText(R.string.login_welcome)).inRoot(withDecorView(not(is(mActivityRule.getActivity().getWindow().getDecorView()))))
                 .check(matches(isDisplayed()));
@@ -78,10 +82,11 @@ public class LoginActivityTest {
 
     @Test
     public void should_login_failed_when_login_given_invalid_password() {
-        when(userRepository.findByName("xiaoming")).thenReturn(new MaybeCreate<>(emitter -> emitter.onSuccess(user)));
+        final String WRONG_PASSWORD = "1234567";
+        when(userRepository.findByName(CREATE_USER_NAME)).thenReturn(new MaybeCreate<>(emitter -> emitter.onSuccess(user)));
 
-        onView(withId(R.id.username)).perform(typeText("xiaoming")).perform(closeSoftKeyboard());
-        onView(withId(R.id.password)).perform(typeText("1234567")).perform(closeSoftKeyboard());
+        onView(withId(R.id.username)).perform(typeText(CREATE_USER_NAME)).perform(closeSoftKeyboard());
+        onView(withId(R.id.password)).perform(typeText(WRONG_PASSWORD)).perform(closeSoftKeyboard());
         onView(withId(R.id.login)).perform(click());
         onView(withText(R.string.login_failed_password)).inRoot(withDecorView(not(is(mActivityRule.getActivity().getWindow().getDecorView()))))
                 .check(matches(isDisplayed()));
@@ -89,15 +94,17 @@ public class LoginActivityTest {
 
     @Test
     public void should_login_failed_when_login_given_username_does_not_exist() {
-        when(userRepository.findByName("notexist")).thenReturn(new Maybe<UserModel>() {
+        final String WRONG_USERNAME = "notexist";
+        final String WRONG_PASSWORD = "1234567";
+        when(userRepository.findByName(WRONG_USERNAME)).thenReturn(new Maybe<UserModel>() {
             @Override
             protected void subscribeActual(MaybeObserver<? super UserModel> observer) {
                 observer.onComplete();
             }
         });
         when(userRepository.getUserByNetwork()).thenReturn(new MaybeCreate<>(emitter -> emitter.onSuccess(user)));
-        onView(withId(R.id.username)).perform(typeText("notexist")).perform(closeSoftKeyboard());
-        onView(withId(R.id.password)).perform(typeText("1234567")).perform(closeSoftKeyboard());
+        onView(withId(R.id.username)).perform(typeText(WRONG_USERNAME)).perform(closeSoftKeyboard());
+        onView(withId(R.id.password)).perform(typeText(WRONG_PASSWORD)).perform(closeSoftKeyboard());
         onView(withId(R.id.login)).perform(click());
         onView(withText(R.string.login_failed_username)).inRoot(withDecorView(not(is(mActivityRule.getActivity().getWindow().getDecorView()))))
                 .check(matches(isDisplayed()));
@@ -105,26 +112,28 @@ public class LoginActivityTest {
 
     @Test
     public void should_login_failed_when_login_given_username_invalid() {
-        when(userRepository.findByName("notexist")).thenReturn(new Maybe<UserModel>() {
+        when(userRepository.findByName(anyString())).thenReturn(new Maybe<UserModel>() {
             @Override
             protected void subscribeActual(MaybeObserver<? super UserModel> observer) {
                 observer.onComplete();
             }
         });
-        onView(withId(R.id.username)).perform(typeText("s"));
+        final String SHORT_USERNAME = "s";
+        onView(withId(R.id.username)).perform(typeText(SHORT_USERNAME));
         onView(withId(R.id.username)).check(matches(hasErrorText(applicationContext.getString(R.string.invalid_username))));
     }
 
     @Test
     public void should_login_failed_when_login_given_password_invalid() {
-        when(userRepository.findByName("notexist")).thenReturn(new Maybe<UserModel>() {
+        when(userRepository.findByName(anyString())).thenReturn(new Maybe<UserModel>() {
             @Override
             protected void subscribeActual(MaybeObserver<? super UserModel> observer) {
                 observer.onComplete();
             }
         });
-        onView(withId(R.id.username)).perform(typeText("notexist")).perform(closeSoftKeyboard());
-        onView(withId(R.id.password)).perform(typeText("123"));
+        onView(withId(R.id.username)).perform(typeText(CREATE_USER_NAME)).perform(closeSoftKeyboard());
+        final String SHORT_PASSWORD = "123";
+        onView(withId(R.id.password)).perform(typeText(SHORT_PASSWORD));
         onView(withId(R.id.password)).check(matches(hasErrorText(applicationContext.getString(R.string.invalid_password))));
     }
 }

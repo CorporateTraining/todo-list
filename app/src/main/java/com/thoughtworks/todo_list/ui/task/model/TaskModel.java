@@ -13,16 +13,18 @@ public class TaskModel implements Serializable {
     private Date createDate;
     private Boolean isChecked;
     private Boolean isRemind;
+    private Integer userId;
 
     public TaskModel() {
     }
 
-    public TaskModel(String title, String description, Date date, Boolean isChecked, Boolean isRemind) {
+    public TaskModel(String title, String description, Date date, Boolean isChecked, Boolean isRemind, Integer userId) {
         this.title = title;
         this.description = description;
         this.date = date;
         this.isChecked = isChecked;
         this.isRemind = isRemind;
+        this.userId = userId;
     }
 
     public String getId() {
@@ -73,6 +75,14 @@ public class TaskModel implements Serializable {
         isRemind = remind;
     }
 
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
     public TaskModel build(Task task) {
         this.id = task.getId();
         this.title = task.getTitle();
@@ -81,6 +91,7 @@ public class TaskModel implements Serializable {
         this.createDate = task.getCreateDate();
         this.isChecked = task.getChecked();
         this.isRemind = task.getRemind();
+        this.userId = task.getUserId();
         return this;
     }
 

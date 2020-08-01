@@ -7,6 +7,6 @@ import io.reactivex.Completable;
 import io.reactivex.Maybe;
 
 public interface UserDataSource {
-    Maybe<User> findByName(String userId);
+    Maybe<User> findByName(String username);
     Completable save(User user);
 }

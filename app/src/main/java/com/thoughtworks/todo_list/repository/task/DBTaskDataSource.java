@@ -22,8 +22,8 @@ public interface DBTaskDataSource extends TaskDataSource {
     @Query("SELECT * FROM task WHERE id = :id")
     Maybe<Task> findById(String id);
 
-    @Query("SELECT * FROM task")
-    Single<List<Task>> findTasks();
+    @Query("SELECT * FROM task where userId = :userId")
+    Single<List<Task>> findTasks(Integer userId);
 
     @Delete
     Completable deleteTask(Task task);

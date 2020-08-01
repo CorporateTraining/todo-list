@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
+import com.thoughtworks.todo_list.ui.login.model.UserModel;
 import com.thoughtworks.todo_list.ui.task.model.TaskModel;
 
 import java.util.Comparator;
@@ -36,8 +37,8 @@ public class TaskViewModel extends ViewModel {
         tasksMutableLiveData.observe(lifecycleOwner, observer);
     }
 
-    public void getTasks() {
-        Single<List<TaskModel>> tasks = taskRepository.findTasks();
+    public void getTasks(Integer userId) {
+        Single<List<TaskModel>> tasks = taskRepository.findTasks(userId);
         tasks.map(taskModels -> {
             Comparator<TaskModel> reversedChecked = ((Comparator<TaskModel>) (taskModel1, taskModel2) -> {
                 Boolean checked1 = taskModel1.getChecked();
@@ -87,7 +88,7 @@ public class TaskViewModel extends ViewModel {
                     @Override
                     public void onComplete() {
                         Log.d(TAG, "onSuccess: save");
-                        getTasks();
+                        getTasks(taskRequest.getUserId());
                     }
 
                     @Override

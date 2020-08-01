@@ -1,6 +1,8 @@
 package com.thoughtworks.todo_list.ui.task;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
 import android.text.Editable;
@@ -22,9 +24,14 @@ import com.thoughtworks.todo_list.MainApplication;
 import com.thoughtworks.todo_list.R;
 import com.thoughtworks.todo_list.ui.task.model.TaskModel;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.text.ParseException;
 import java.util.Locale;
 
+import static com.thoughtworks.todo_list.ui.login.LoginActivity.SHARED_ID;
+import static com.thoughtworks.todo_list.ui.login.LoginActivity.SHARED_NAME;
+import static com.thoughtworks.todo_list.ui.login.LoginActivity.SHARED_USER;
 import static com.thoughtworks.todo_list.ui.task.TaskActivity.TASK_VIEW_KEY;
 
 public class CreateTaskActivity extends AppCompatActivity {
@@ -81,12 +88,16 @@ public class CreateTaskActivity extends AppCompatActivity {
                 hasTitle = true;
                 this.createDateInfo.setTextColor(ContextCompat.getColor(this, R.color.colorTextBlue));
                 deleteButton.setVisibility(View.VISIBLE);
-                deleteButton.setOnClickListener(view -> {
-                    taskViewModel.deleteTask(taskModel);
-                    jumpTaskPage();
-                });
+                deleteTaskJumpTaskListPage();
             }
         }
+    }
+
+    private void deleteTaskJumpTaskListPage() {
+        deleteButton.setOnClickListener(view -> {
+            taskViewModel.deleteTask(taskModel);
+            jumpTaskPage();
+        });
     }
 
     private void listenerShowCalendarView() {
@@ -117,22 +128,32 @@ public class CreateTaskActivity extends AppCompatActivity {
     }
 
     private void createTaskData() throws ParseException {
+        Integer userId = getUserId();
         taskModel = new TaskModel(
                 createTitle.getText().toString(),
                 createDescription.getText().toString(),
                 simpleDateFormat.parse(createDateInfo.getText().toString()),
                 createIsChecked.isChecked(),
-                createIsRemind.isChecked());
+                createIsRemind.isChecked(),
+                userId);
         taskViewModel.saveTask(taskModel);
     }
 
     private void updateTaskData() throws ParseException {
+        Integer userId = getUserId();
         taskModel.setTitle(createTitle.getText().toString());
         taskModel.setDescription(createDescription.getText().toString());
         taskModel.setDate(simpleDateFormat.parse(createDateInfo.getText().toString()));
         taskModel.setChecked(createIsChecked.isChecked());
         taskModel.setRemind(createIsRemind.isChecked());
+        taskModel.setUserId(userId);
         taskViewModel.updateTask(taskModel);
+    }
+
+    @NotNull
+    private Integer getUserId() {
+        SharedPreferences preferences = getSharedPreferences(SHARED_USER, Context.MODE_PRIVATE);
+        return preferences.getInt(SHARED_ID, 0);
     }
 
     private void listenerSelectCalendarData() {

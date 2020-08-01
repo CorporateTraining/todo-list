@@ -11,7 +11,7 @@ import io.reactivex.Single;
 public interface TaskRepository {
     Maybe<TaskModel> findById(String taskId);
 
-    Single<List<TaskModel>> findTasks();
+    Single<List<TaskModel>> findTasks(Integer userId);
 
     Completable deleteTask(TaskModel task);
 

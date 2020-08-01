@@ -23,8 +23,8 @@ public class TaskRepositoryImpl implements TaskRepository {
     }
 
     @Override
-    public Single<List<TaskModel>> findTasks() {
-        return dataSource.findTasks().map(tasks -> {
+    public Single<List<TaskModel>> findTasks(Integer userId) {
+        return dataSource.findTasks(userId).map(tasks -> {
             List<TaskModel> taskRespons = new ArrayList<>();
             for (Task task : tasks) {
                 TaskModel taskModel = new TaskModel().build(task);

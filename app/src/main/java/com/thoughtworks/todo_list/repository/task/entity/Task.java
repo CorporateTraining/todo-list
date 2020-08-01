@@ -20,6 +20,7 @@ public class Task {
     private Date createDate;
     private Boolean isChecked;
     private Boolean isRemind;
+    private Integer userId;
 
     public Task() {
     }
@@ -81,6 +82,14 @@ public class Task {
         isRemind = remind;
     }
 
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
     public Task build(TaskModel task) {
         this.id = task.getId();
         this.title = task.getTitle();
@@ -89,6 +98,7 @@ public class Task {
         this.createDate = task.getCreateDate();
         this.isChecked = task.getChecked();
         this.isRemind = task.getRemind();
+        this.userId = task.getUserId();
         return this;
     }
 
@@ -100,6 +110,7 @@ public class Task {
         this.createDate = new Date();
         this.isChecked = task.getChecked();
         this.isRemind = task.getRemind();
+        this.userId = task.getUserId();
         return this;
     }
 

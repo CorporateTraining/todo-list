@@ -1,6 +1,8 @@
 package com.thoughtworks.todo_list.ui.task;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.widget.Button;
@@ -19,6 +21,10 @@ import com.thoughtworks.todo_list.ui.login.LoginActivity;
 import com.thoughtworks.todo_list.ui.task.model.TaskModel;
 
 import java.util.Date;
+
+import static com.thoughtworks.todo_list.ui.login.LoginActivity.SHARED_ID;
+import static com.thoughtworks.todo_list.ui.login.LoginActivity.SHARED_NAME;
+import static com.thoughtworks.todo_list.ui.login.LoginActivity.SHARED_USER;
 
 public class TaskActivity extends AppCompatActivity {
     private Toolbar toolbar;
@@ -44,7 +50,9 @@ public class TaskActivity extends AppCompatActivity {
         setDateToTitle();
         taskViewModel = obtainViewModel();
         circularDisplayTask();
-        taskViewModel.getTasks();
+        SharedPreferences preferences = getSharedPreferences(SHARED_USER, Context.MODE_PRIVATE);
+        Integer userId = preferences.getInt(SHARED_ID, 0);
+        taskViewModel.getTasks(userId);
         listenerUserLogout();
         listenerJumpCreateTaskPage();
     }
