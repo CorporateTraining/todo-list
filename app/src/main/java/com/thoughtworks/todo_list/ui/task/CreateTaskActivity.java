@@ -20,12 +20,16 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.thoughtworks.todo_list.MainApplication;
 import com.thoughtworks.todo_list.R;
+import com.thoughtworks.todo_list.repository.task.entity.Task;
 import com.thoughtworks.todo_list.ui.task.model.TaskModel;
 
 import java.text.ParseException;
 import java.util.Locale;
 
+import static com.thoughtworks.todo_list.ui.task.TaskActivity.TASK_VIEW_KEY;
+
 public class CreateTaskActivity extends AppCompatActivity {
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日", Locale.CHINA);
     private Toolbar toolbar;
     private EditText createTitle, createDescription;
     private TextView createDateInfo;
@@ -36,6 +40,7 @@ public class CreateTaskActivity extends AppCompatActivity {
     private TaskViewModel taskViewModel;
     private Boolean hasDate = false;
     private Boolean hasTitle = false;
+    private TaskModel taskModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,20 +51,37 @@ public class CreateTaskActivity extends AppCompatActivity {
         createDescription = findViewById(R.id.create_description);
         createIsChecked = findViewById(R.id.create_check_box);
         createIsRemind = findViewById(R.id.create_switch);
-        createIsRemind = findViewById(R.id.create_switch);
         calendarView = findViewById(R.id.calendar_view);
         createDateInfo = findViewById(R.id.create_date_info);
         createSubmit = findViewById(R.id.create_button);
+        fillingTaskData();
 
         taskViewModel = obtainViewModel();
         toolbar.setNavigationOnClickListener(v -> finish());
         calendarView.setVisibility(View.INVISIBLE);
-        createSubmit.setEnabled(false);
+        createSubmit.setEnabled(hasDate && hasTitle);
         listenerEmptyTitle();
         listenerShowCalendarView();
         listenerSelectCalendarData();
         listenerSubmitTaskData();
+    }
 
+    private void fillingTaskData() {
+        Intent intent = this.getIntent();
+        Bundle bundle = intent.getExtras();
+        if (bundle != null) {
+            taskModel = (TaskModel) bundle.getSerializable(TASK_VIEW_KEY);
+            if (taskModel != null) {
+                createTitle.setText(taskModel.getTitle());
+                createDescription.setText(taskModel.getDescription());
+                createIsChecked.setChecked(taskModel.getChecked());
+                createIsRemind.setChecked(taskModel.getRemind());
+                createDateInfo.setText(simpleDateFormat.format(taskModel.getDate()));
+                hasDate = true;
+                hasTitle = true;
+                this.createDateInfo.setTextColor(ContextCompat.getColor(this, R.color.colorTextBlue));
+            }
+        }
     }
 
     private void listenerShowCalendarView() {
@@ -70,21 +92,37 @@ public class CreateTaskActivity extends AppCompatActivity {
 
     private void listenerSubmitTaskData() {
         createSubmit.setOnClickListener(view -> {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(" yyyy年MM月dd日", Locale.CHINA);
             try {
-                TaskModel taskModel = new TaskModel(
-                        createTitle.getText().toString(),
-                        createDescription.getText().toString(),
-                        simpleDateFormat.parse(createDateInfo.getText().toString()),
-                        createIsChecked.isChecked(),
-                        createIsRemind.isChecked());
-                taskViewModel.saveTask(taskModel);
+                if (taskModel != null) {
+                    updateTaskData();
+                } else {
+                    createTaskData();
+                }
                 Intent intent = new Intent(CreateTaskActivity.this, TaskActivity.class);
                 startActivity(intent);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
         });
+    }
+
+    private void createTaskData() throws ParseException {
+        taskModel = new TaskModel(
+                createTitle.getText().toString(),
+                createDescription.getText().toString(),
+                simpleDateFormat.parse(createDateInfo.getText().toString()),
+                createIsChecked.isChecked(),
+                createIsRemind.isChecked());
+        taskViewModel.saveTask(taskModel);
+    }
+
+    private void updateTaskData() throws ParseException {
+        taskModel.setTitle(createTitle.getText().toString());
+        taskModel.setDescription(createDescription.getText().toString());
+        taskModel.setDate(simpleDateFormat.parse(createDateInfo.getText().toString()));
+        taskModel.setChecked(createIsChecked.isChecked());
+        taskModel.setRemind(createIsRemind.isChecked());
+        taskViewModel.updateTask(taskModel);
     }
 
     private void listenerSelectCalendarData() {

@@ -2,9 +2,10 @@ package com.thoughtworks.todo_list.ui.task.model;
 
 import com.thoughtworks.todo_list.repository.task.entity.Task;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class TaskModel {
+public class TaskModel implements Serializable {
     private String id;
     private String title;
     private String description;
@@ -54,6 +55,22 @@ public class TaskModel {
 
     public Boolean getRemind() {
         return isRemind;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public void setRemind(Boolean remind) {
+        isRemind = remind;
     }
 
     public TaskModel build(Task task) {

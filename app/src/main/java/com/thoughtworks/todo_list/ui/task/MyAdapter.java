@@ -1,6 +1,7 @@
 package com.thoughtworks.todo_list.ui.task;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Paint;
 import android.icu.text.SimpleDateFormat;
 import android.view.LayoutInflater;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -27,10 +29,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     private List<TaskModel> itemDataList;
     private TaskViewModel taskViewModel;
     private Context context;
+    private TaskActivity taskActivity;
 
-    public MyAdapter(List<TaskModel> itemDataList, TaskViewModel taskViewModel) {
+    public MyAdapter(List<TaskModel> itemDataList, TaskViewModel taskViewModel, TaskActivity taskActivity) {
         this.itemDataList = itemDataList;
         this.taskViewModel = taskViewModel;
+        this.taskActivity = taskActivity;
     }
 
     @NonNull
@@ -50,10 +54,16 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         holder.setTitleText(itemData.getTitle());
         if (itemData.getChecked()) {
             modifyTextStyle(holder, Paint.STRIKE_THRU_TEXT_FLAG, R.color.colorTextDeleteGray);
+        } else {
+            modifyTextStyle(holder, 0, R.color.colorTextGray);
         }
         holder.setDateText(simpleDateFormat.format(date));
         holder.setCheckBox(itemData.getChecked());
         holder.checkBox.setOnClickListener(getOnClickListener(holder));
+        holder.itemView.setOnClickListener(view -> {
+            TaskModel taskModel = itemDataList.get(position);
+            taskActivity.jumpCreateTaskPage(taskModel);
+        });
     }
 
     @NotNull
@@ -64,7 +74,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             if (taskModel.getChecked()) {
                 modifyCheckBoxStyle(holder, taskModel, false);
                 modifyTextStyle(holder, 0, R.color.colorTextGray);
-            }else{
+            } else {
                 modifyCheckBoxStyle(holder, taskModel, true);
                 modifyTextStyle(holder, Paint.STRIKE_THRU_TEXT_FLAG, R.color.colorTextDeleteGray);
             }

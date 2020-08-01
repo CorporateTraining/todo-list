@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.thoughtworks.todo_list.MainApplication;
 import com.thoughtworks.todo_list.R;
 import com.thoughtworks.todo_list.ui.login.LoginActivity;
+import com.thoughtworks.todo_list.ui.task.model.TaskModel;
 
 import java.util.Date;
 
@@ -27,6 +28,7 @@ public class TaskActivity extends AppCompatActivity {
     private MyAdapter myAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private TaskViewModel taskViewModel;
+    public final static String TASK_VIEW_KEY = "TASK_MODEL_KEY";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,7 +62,7 @@ public class TaskActivity extends AppCompatActivity {
             recyclerView.setHasFixedSize(true);
             layoutManager = new LinearLayoutManager(this);
             recyclerView.setLayoutManager(layoutManager);
-            myAdapter = new MyAdapter(tasks, taskViewModel);
+            myAdapter = new MyAdapter(tasks, taskViewModel, this);
             recyclerView.setAdapter(myAdapter);
             recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
             taskNumber.setText(String.format("%s个任务", tasks.size()));
@@ -95,5 +97,13 @@ public class TaskActivity extends AppCompatActivity {
         TaskViewModel taskViewModel = new ViewModelProvider(this).get(TaskViewModel.class);
         taskViewModel.setTaskRepository(taskRepository);
         return taskViewModel;
+    }
+
+    public void jumpCreateTaskPage(TaskModel taskModel){
+        Intent intent = new Intent(TaskActivity.this, CreateTaskActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(TASK_VIEW_KEY, taskModel);
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 }
