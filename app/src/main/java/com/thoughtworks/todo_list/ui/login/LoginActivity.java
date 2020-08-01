@@ -26,18 +26,46 @@ import static com.thoughtworks.todo_list.ui.utils.Validator.USERNAME_REGULAR;
 
 public class LoginActivity extends AppCompatActivity {
     private LoginViewModel loginViewModel;
+    private EditText usernameEditText, passwordEditText;
+    private Button loginButton;
+    private ProgressBar loadingProgressBar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         loginViewModel = obtainViewModel();
+        usernameEditText = findViewById(R.id.username);
+        passwordEditText = findViewById(R.id.password);
+        loginButton = findViewById(R.id.login);
+        loadingProgressBar = findViewById(R.id.loading);
+        observeLoginResult();
+        TextWatcher afterTextChangedListener = getAfterTextChangedListener(usernameEditText, passwordEditText, loginButton);
+        usernameEditText.addTextChangedListener(afterTextChangedListener);
+        passwordEditText.addTextChangedListener(afterTextChangedListener);
+        listenerPasswordKeyboardActionDone();
+        listenerLogin();
+    }
 
-        final EditText usernameEditText = findViewById(R.id.username);
-        final EditText passwordEditText = findViewById(R.id.password);
-        final Button loginButton = findViewById(R.id.login);
-        final ProgressBar loadingProgressBar = findViewById(R.id.loading);
+    private void listenerLogin() {
+        loginButton.setOnClickListener(v -> {
+            loadingProgressBar.setVisibility(View.VISIBLE);
+            loginViewModel.login(usernameEditText.getText().toString(),
+                    passwordEditText.getText().toString());
+        });
+    }
 
+    private void listenerPasswordKeyboardActionDone() {
+        passwordEditText.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                loginViewModel.login(usernameEditText.getText().toString(),
+                        passwordEditText.getText().toString());
+            }
+            return false;
+        });
+    }
+
+    private void observeLoginResult() {
         loginViewModel.observeLoginResult(this, loginResult -> {
             if (loginResult == null) {
                 return;
@@ -53,24 +81,8 @@ public class LoginActivity extends AppCompatActivity {
                 finish();
             }
         });
-
-        TextWatcher afterTextChangedListener = getAfterTextChangedListener(usernameEditText, passwordEditText, loginButton);
-        usernameEditText.addTextChangedListener(afterTextChangedListener);
-        passwordEditText.addTextChangedListener(afterTextChangedListener);
-        passwordEditText.setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                loginViewModel.login(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
-            }
-            return false;
-        });
-
-        loginButton.setOnClickListener(v -> {
-            loadingProgressBar.setVisibility(View.VISIBLE);
-            loginViewModel.login(usernameEditText.getText().toString(),
-                    passwordEditText.getText().toString());
-        });
     }
+
     @NotNull
     private TextWatcher getAfterTextChangedListener(EditText usernameEditText, EditText passwordEditText, Button loginButton) {
         return new TextWatcher() {

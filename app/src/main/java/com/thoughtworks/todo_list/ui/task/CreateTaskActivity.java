@@ -20,11 +20,9 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.thoughtworks.todo_list.MainApplication;
 import com.thoughtworks.todo_list.R;
-import com.thoughtworks.todo_list.repository.task.entity.Task;
 import com.thoughtworks.todo_list.ui.task.model.TaskModel;
 
 import java.text.ParseException;
-import java.util.Date;
 import java.util.Locale;
 
 public class CreateTaskActivity extends AppCompatActivity {
@@ -57,31 +55,20 @@ public class CreateTaskActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> finish());
         calendarView.setVisibility(View.INVISIBLE);
         createSubmit.setEnabled(false);
-        createTitle.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
+        listenerEmptyTitle();
+        listenerShowCalendarView();
+        listenerSelectCalendarData();
+        listenerSubmitTaskData();
 
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
+    }
 
-            @Override
-            public void afterTextChanged(Editable editable) {
-                hasTitle = createTitle.getText().toString().length() > 0;
-                createSubmit.setEnabled(hasTitle && hasDate);
-            }
-        });
+    private void listenerShowCalendarView() {
         createDateInfo.setOnClickListener(view -> {
             this.calendarView.setVisibility(View.VISIBLE);
         });
-        calendarView.setOnDateChangeListener((calendarView, year, month, day) -> {
-            this.calendarView.setVisibility(View.INVISIBLE);
-            this.createDateInfo.setText(String.format("%s年%s月%s日", year, month + 1, day));
-            this.createDateInfo.setTextColor(ContextCompat.getColor(this, R.color.colorTextBlue));
-            createSubmit.setEnabled(hasTitle);
-            hasDate = true;
-        });
+    }
+
+    private void listenerSubmitTaskData() {
         createSubmit.setOnClickListener(view -> {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(" yyyy年MM月dd日", Locale.CHINA);
             try {
@@ -98,7 +85,34 @@ public class CreateTaskActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         });
+    }
 
+    private void listenerSelectCalendarData() {
+        calendarView.setOnDateChangeListener((calendarView, year, month, day) -> {
+            this.calendarView.setVisibility(View.INVISIBLE);
+            this.createDateInfo.setText(String.format("%s年%s月%s日", year, month + 1, day));
+            this.createDateInfo.setTextColor(ContextCompat.getColor(this, R.color.colorTextBlue));
+            createSubmit.setEnabled(hasTitle);
+            hasDate = true;
+        });
+    }
+
+    private void listenerEmptyTitle() {
+        createTitle.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                hasTitle = createTitle.getText().toString().length() > 0;
+                createSubmit.setEnabled(hasTitle && hasDate);
+            }
+        });
     }
 
     private TaskViewModel obtainViewModel() {

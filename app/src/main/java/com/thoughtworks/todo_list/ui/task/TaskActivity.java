@@ -1,13 +1,9 @@
 package com.thoughtworks.todo_list.ui.task;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.format.DateFormat;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toolbar;
 
@@ -45,6 +41,20 @@ public class TaskActivity extends AppCompatActivity {
         taskNumber = findViewById(R.id.task_number);
         setDateToTitle();
         taskViewModel = obtainViewModel();
+        circularDisplayTask();
+        taskViewModel.getTasks();
+        listenerUserLogout();
+        listenerJumpCreateTaskPage();
+    }
+
+    private void listenerJumpCreateTaskPage() {
+        createButton.setOnClickListener(view -> {
+            Intent intent = new Intent(TaskActivity.this, CreateTaskActivity.class);
+            startActivity(intent);
+        });
+    }
+
+    private void circularDisplayTask() {
         taskViewModel.observeTasks(this, tasks -> {
             recyclerView = findViewById(R.id.my_recycle_view);
             recyclerView.setHasFixedSize(true);
@@ -55,15 +65,9 @@ public class TaskActivity extends AppCompatActivity {
             recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
             taskNumber.setText(String.format("%s个任务", tasks.size()));
         });
-        taskViewModel.getTasks();
-        userLogout();
-        createButton.setOnClickListener(view -> {
-            Intent intent = new Intent(TaskActivity.this, CreateTaskActivity.class);
-            startActivity(intent);
-        });
     }
 
-    private void userLogout() {
+    private void listenerUserLogout() {
         toolbar.setOnMenuItemClickListener(menuItem -> {
             switch (menuItem.getItemId()) {
                 case R.id.logout:
