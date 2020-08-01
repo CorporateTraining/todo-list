@@ -1,6 +1,6 @@
 package com.thoughtworks.todo_list.ui.login;
 
-import com.thoughtworks.todo_list.repository.user.model.UserModel;
+import com.thoughtworks.todo_list.ui.login.model.UserModel;
 
 import io.reactivex.Completable;
 import io.reactivex.Maybe;

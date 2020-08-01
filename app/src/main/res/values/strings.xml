@@ -16,4 +16,7 @@
     <string name="title">标题</string>
     <string name="create">+</string>
     <string name="logo">logo</string>
+    <string name="remind">提醒</string>
+    <string name="date">日期</string>
+    <string name="hint_description">描述</string>
 </resources>

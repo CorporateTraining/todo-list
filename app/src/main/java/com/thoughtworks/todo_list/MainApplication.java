@@ -6,7 +6,6 @@ import androidx.room.Room;
 
 import com.thoughtworks.todo_list.repository.AppDatabase;
 import com.thoughtworks.todo_list.repository.task.TaskRepositoryImpl;
-import com.thoughtworks.todo_list.repository.task.model.TaskModel;
 import com.thoughtworks.todo_list.repository.user.UserRepositoryImpl;
 import com.thoughtworks.todo_list.ui.login.UserRepository;
 import com.thoughtworks.todo_list.ui.task.TaskRepository;

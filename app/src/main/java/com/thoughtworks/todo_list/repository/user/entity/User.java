@@ -5,7 +5,7 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
-import com.thoughtworks.todo_list.repository.user.model.UserModel;
+import com.thoughtworks.todo_list.ui.login.model.UserModel;
 
 @Entity
 public class User {

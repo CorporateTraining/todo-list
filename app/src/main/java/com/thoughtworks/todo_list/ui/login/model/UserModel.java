@@ -1,4 +1,4 @@
-package com.thoughtworks.todo_list.repository.user.model;
+package com.thoughtworks.todo_list.ui.login.model;
 
 import com.thoughtworks.todo_list.repository.user.entity.User;
 

@@ -1,6 +1,6 @@
 package com.thoughtworks.todo_list.ui.task;
 
-import com.thoughtworks.todo_list.repository.task.model.TaskModel;
+import com.thoughtworks.todo_list.ui.task.model.TaskModel;
 
 import java.util.List;
 

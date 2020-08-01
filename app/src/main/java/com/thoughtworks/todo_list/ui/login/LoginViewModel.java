@@ -8,7 +8,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
 import com.thoughtworks.todo_list.R;
-import com.thoughtworks.todo_list.repository.user.model.UserModel;
+import com.thoughtworks.todo_list.ui.login.model.UserModel;
 import com.thoughtworks.todo_list.repository.utils.Encryptor;
 
 import io.reactivex.MaybeObserver;

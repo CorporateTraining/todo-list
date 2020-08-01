@@ -1,22 +1,23 @@
 package com.thoughtworks.todo_list.ui.task;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
-import com.thoughtworks.todo_list.repository.task.model.TaskModel;
+import com.thoughtworks.todo_list.ui.task.model.TaskModel;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.security.auth.callback.Callback;
+
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
-import io.reactivex.Maybe;
-import io.reactivex.MaybeObserver;
 import io.reactivex.Single;
 import io.reactivex.SingleObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -99,8 +100,8 @@ public class TaskViewModel extends ViewModel {
                 });
     }
 
-    public void saveTask(TaskModel taskRequest){
-        Completable completable = taskRepository.save(taskRequest);
+    public void saveTask(TaskModel taskModel){
+        Completable completable = taskRepository.save(taskModel);
         completable.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new CompletableObserver() {

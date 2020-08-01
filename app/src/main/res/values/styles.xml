@@ -25,7 +25,9 @@
 
     <style name="AppTheme.ToolBar" parent="AppTheme">
         <item name="overlapAnchor">false</item>
-        <item name="android:dropDownVerticalOffset">40dp</item>
-        <item name="android:dropDownHorizontalOffset">-20dp</item>
+    </style>
+
+    <style name="MySwitch" parent="Theme.AppCompat.Light">
+        <item name="colorControlActivated">@color/colorTextBlue</item>
     </style>
 </resources>

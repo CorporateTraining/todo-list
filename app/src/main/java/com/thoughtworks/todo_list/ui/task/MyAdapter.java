@@ -14,7 +14,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.thoughtworks.todo_list.R;
-import com.thoughtworks.todo_list.repository.task.model.TaskModel;
+import com.thoughtworks.todo_list.ui.task.model.TaskModel;
 
 import org.jetbrains.annotations.NotNull;
 

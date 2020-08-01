@@ -1,7 +1,7 @@
 package com.thoughtworks.todo_list.repository.user;
 
 import com.thoughtworks.todo_list.repository.user.entity.User;
-import com.thoughtworks.todo_list.repository.user.model.UserModel;
+import com.thoughtworks.todo_list.ui.login.model.UserModel;
 import com.thoughtworks.todo_list.repository.utils.NetworkGetData;
 import com.thoughtworks.todo_list.ui.login.UserRepository;
 

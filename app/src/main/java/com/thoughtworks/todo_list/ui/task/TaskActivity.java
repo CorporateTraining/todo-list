@@ -4,6 +4,9 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toolbar;
@@ -23,7 +26,7 @@ import java.util.Date;
 public class TaskActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private TextView weekAndDay, month, taskNumber;
-    private CheckBox itemCheckBox;
+    private Button createButton;
     private RecyclerView recyclerView;
     private MyAdapter myAdapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -34,9 +37,10 @@ public class TaskActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activiey_task);
         toolbar = findViewById(R.id.task_toolbar);
+        setActionBar(toolbar);
         toolbar.inflateMenu(R.menu.home_menu);
         weekAndDay = findViewById(R.id.week_and_day);
-        itemCheckBox = findViewById(R.id.item_check_box);
+        createButton = findViewById(R.id.create_button);
         month = findViewById(R.id.month);
         taskNumber = findViewById(R.id.task_number);
         setDateToTitle();
@@ -48,16 +52,20 @@ public class TaskActivity extends AppCompatActivity {
             recyclerView.setLayoutManager(layoutManager);
             myAdapter = new MyAdapter(tasks, taskViewModel);
             recyclerView.setAdapter(myAdapter);
-            recyclerView.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
+            recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
             taskNumber.setText(String.format("%s个任务", tasks.size()));
         });
         taskViewModel.getTasks();
         userLogout();
+        createButton.setOnClickListener(view -> {
+            Intent intent = new Intent(TaskActivity.this, CreateTaskActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void userLogout() {
         toolbar.setOnMenuItemClickListener(menuItem -> {
-            switch (menuItem.getItemId()){
+            switch (menuItem.getItemId()) {
                 case R.id.logout:
                     Intent intent = new Intent(TaskActivity.this, LoginActivity.class);
                     startActivity(intent);
@@ -74,7 +82,7 @@ public class TaskActivity extends AppCompatActivity {
         String weekFormat = DateFormat.format("EEEE", date).toString();
         String monthFormat = DateFormat.format("MMM", date).toString();
         String dayFormat = DateFormat.format("dd", date).toString();
-        weekAndDay.setText(String.format("%s, %sth", weekFormat,dayFormat));
+        weekAndDay.setText(String.format("%s, %sth", weekFormat, dayFormat));
         month.setText(monthFormat);
     }
 

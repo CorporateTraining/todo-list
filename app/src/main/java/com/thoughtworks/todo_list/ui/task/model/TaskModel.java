@@ -1,4 +1,4 @@
-package com.thoughtworks.todo_list.repository.task.model;
+package com.thoughtworks.todo_list.ui.task.model;
 
 import com.thoughtworks.todo_list.repository.task.entity.Task;
 
@@ -12,6 +12,17 @@ public class TaskModel {
     private Date createDate;
     private Boolean isChecked;
     private Boolean isRemind;
+
+    public TaskModel() {
+    }
+
+    public TaskModel(String title, String description, Date date, Boolean isChecked, Boolean isRemind) {
+        this.title = title;
+        this.description = description;
+        this.date = date;
+        this.isChecked = isChecked;
+        this.isRemind = isRemind;
+    }
 
     public String getId() {
         return id;

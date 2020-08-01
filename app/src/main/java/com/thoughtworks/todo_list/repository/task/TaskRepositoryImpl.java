@@ -1,7 +1,7 @@
 package com.thoughtworks.todo_list.repository.task;
 
 import com.thoughtworks.todo_list.repository.task.entity.Task;
-import com.thoughtworks.todo_list.repository.task.model.TaskModel;
+import com.thoughtworks.todo_list.ui.task.model.TaskModel;
 import com.thoughtworks.todo_list.ui.task.TaskRepository;
 
 import java.util.ArrayList;
