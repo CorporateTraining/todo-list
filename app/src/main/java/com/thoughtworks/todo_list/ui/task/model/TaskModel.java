@@ -18,14 +18,17 @@ public class TaskModel implements Serializable {
     public TaskModel() {
     }
 
-    public TaskModel(String title, String description, Date date, Boolean isChecked, Boolean isRemind, Integer userId) {
+    public TaskModel(String id, String title, String description, Date date, Date createDate, Boolean isChecked, Boolean isRemind, Integer userId) {
+        this.id = id;
         this.title = title;
         this.description = description;
         this.date = date;
+        this.createDate = createDate;
         this.isChecked = isChecked;
         this.isRemind = isRemind;
         this.userId = userId;
     }
+
 
     public String getId() {
         return id;

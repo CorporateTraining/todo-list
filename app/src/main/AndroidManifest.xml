@@ -26,6 +26,16 @@
         <activity
             android:name=".ui.task.TaskActivity"
             android:label="@string/home_page_name" />
+
+        <receiver
+            android:name=".ui.task.TaskReceiver"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

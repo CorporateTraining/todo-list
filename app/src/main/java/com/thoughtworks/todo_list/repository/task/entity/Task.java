@@ -103,7 +103,7 @@ public class Task {
     }
 
     public Task create(TaskModel task) {
-        this.id = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+        this.id = task.getId();
         this.title = task.getTitle();
         this.description = task.getDescription();
         this.date = task.getDate();

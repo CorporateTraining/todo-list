@@ -27,12 +27,16 @@ import com.thoughtworks.todo_list.ui.task.model.TaskModel;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
+import java.util.UUID;
 
 import static com.thoughtworks.todo_list.ui.login.LoginActivity.SHARED_ID;
 import static com.thoughtworks.todo_list.ui.login.LoginActivity.SHARED_NAME;
 import static com.thoughtworks.todo_list.ui.login.LoginActivity.SHARED_USER;
 import static com.thoughtworks.todo_list.ui.task.TaskActivity.TASK_VIEW_KEY;
+import static com.thoughtworks.todo_list.ui.task.TaskAlarManager.taskAlarManager;
 
 public class CreateTaskActivity extends AppCompatActivity {
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日", Locale.CHINA);
@@ -115,11 +119,18 @@ public class CreateTaskActivity extends AppCompatActivity {
                 } else {
                     createTaskData();
                 }
+                if (isTimerNotification()) {
+                    taskAlarManager(this, taskModel);
+                }
                 jumpTaskPage();
             } catch (ParseException e) {
                 e.printStackTrace();
             }
         });
+    }
+
+    private boolean isTimerNotification() {
+        return taskModel.getRemind() && !taskModel.getChecked() && taskModel.getDate().getTime() > new Date().getTime();
     }
 
     private void jumpTaskPage() {
@@ -129,10 +140,17 @@ public class CreateTaskActivity extends AppCompatActivity {
 
     private void createTaskData() throws ParseException {
         Integer userId = getUserId();
+        Date date = simpleDateFormat.parse(createDateInfo.getText().toString());
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.HOUR, 6);// 24小时制
+        date = cal.getTime();
         taskModel = new TaskModel(
+                UUID.randomUUID().toString().replace("-", "").toLowerCase(),
                 createTitle.getText().toString(),
                 createDescription.getText().toString(),
-                simpleDateFormat.parse(createDateInfo.getText().toString()),
+                date,
+                new Date(),
                 createIsChecked.isChecked(),
                 createIsRemind.isChecked(),
                 userId);
