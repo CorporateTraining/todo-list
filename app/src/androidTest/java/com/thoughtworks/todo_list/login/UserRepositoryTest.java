@@ -1,4 +1,4 @@
-package com.thoughtworks.todo_list;
+package com.thoughtworks.todo_list.login;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.room.Room;

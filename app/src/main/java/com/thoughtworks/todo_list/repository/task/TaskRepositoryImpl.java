@@ -48,7 +48,7 @@ public class TaskRepositoryImpl implements TaskRepository {
 
     @Override
     public Completable save(TaskModel taskModel) {
-        Task task = new Task().create(taskModel);
+        Task task = new Task().build(taskModel);
         return dataSource.save(task);
     }
 }

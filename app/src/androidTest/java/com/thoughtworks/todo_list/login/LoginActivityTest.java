@@ -1,9 +1,12 @@
-package com.thoughtworks.todo_list;
+package com.thoughtworks.todo_list.login;
 
+import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 
+import com.thoughtworks.todo_list.MainApplication;
+import com.thoughtworks.todo_list.R;
 import com.thoughtworks.todo_list.ui.login.model.UserModel;
 import com.thoughtworks.todo_list.repository.utils.Encryptor;
 import com.thoughtworks.todo_list.ui.login.LoginActivity;
@@ -73,7 +76,7 @@ public class LoginActivityTest {
         when(userRepository.findByName(CREATE_USER_NAME)).thenReturn(new MaybeCreate<>(emitter -> emitter.onSuccess(user)));
         when(taskRepository.findTasks(CREATE_USER_ID)).thenReturn(new SingleCreate<>(emitter -> emitter.onSuccess(new ArrayList<>())));
 
-        onView(withId(R.id.username)).perform(typeText(CREATE_USER_NAME)).perform(closeSoftKeyboard());
+        onView(ViewMatchers.withId(R.id.username)).perform(typeText(CREATE_USER_NAME)).perform(closeSoftKeyboard());
         onView(withId(R.id.password)).perform(typeText(CREATE_PASSWORD)).perform(closeSoftKeyboard());
         onView(withId(R.id.login)).perform(click());
         onView(withText(R.string.login_welcome)).inRoot(withDecorView(not(is(mActivityRule.getActivity().getWindow().getDecorView()))))

@@ -102,16 +102,4 @@ public class Task {
         return this;
     }
 
-    public Task create(TaskModel task) {
-        this.id = task.getId();
-        this.title = task.getTitle();
-        this.description = task.getDescription();
-        this.date = task.getDate();
-        this.createDate = new Date();
-        this.isChecked = task.getChecked();
-        this.isRemind = task.getRemind();
-        this.userId = task.getUserId();
-        return this;
-    }
-
 }
