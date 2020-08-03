@@ -1,5 +1,7 @@
 package com.thoughtworks.todo_list.task;
 
+import android.os.SystemClock;
+
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.room.Room;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -24,6 +26,7 @@ import org.junit.runner.RunWith;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import io.reactivex.schedulers.Schedulers;
@@ -52,15 +55,6 @@ public class TaskRepositoryTest {
                 InstrumentationRegistry.getInstrumentation().getTargetContext(),
                 AppDatabase.class).build();
         taskRepository = new TaskRepositoryImpl(appDatabase.taskDataSource());
-        taskModel = new TaskModel(
-                CREATE_ID,
-                CREATE_TITLE,
-                CREATE_DESCRIPTION,
-                DATE,
-                CREATE_DATE,
-                IS_CHECKED,
-                IS_REMIND,
-                CREATE_USER_ID);
     }
 
     @After
@@ -70,7 +64,8 @@ public class TaskRepositoryTest {
 
     @Test
     public void should_return_list_tasks_where_given_correct_user_id() {
-
+        taskModel = new TaskModel(CREATE_ID, CREATE_TITLE, CREATE_DESCRIPTION, DATE,
+                CREATE_DATE, IS_CHECKED, IS_REMIND, CREATE_USER_ID);
         appDatabase.taskDataSource().save(new Task()
                 .build(taskModel))
                 .subscribeOn(Schedulers.io())
@@ -83,6 +78,8 @@ public class TaskRepositoryTest {
 
     @Test
     public void should_update_successfully_where_given_new_task_info() {
+        taskModel = new TaskModel(CREATE_ID, CREATE_TITLE, CREATE_DESCRIPTION, DATE,
+                CREATE_DATE, IS_CHECKED, IS_REMIND, CREATE_USER_ID);
         appDatabase.taskDataSource().save(new Task()
                 .build(taskModel))
                 .subscribeOn(Schedulers.io())
@@ -99,4 +96,18 @@ public class TaskRepositoryTest {
 
     }
 
+    @Test
+    public void should_delete_successfully_where_given_task_id() {
+        taskModel = new TaskModel(CREATE_ID, CREATE_TITLE, CREATE_DESCRIPTION, DATE,
+                CREATE_DATE, IS_CHECKED, IS_REMIND, CREATE_USER_ID);
+        appDatabase.taskDataSource().save(new Task()
+                .build(taskModel))
+                .subscribeOn(Schedulers.io())
+                .subscribe();
+        taskRepository.deleteTask(taskModel).subscribeOn(Schedulers.io()).subscribe();
+        SystemClock.sleep(2000);
+        taskRepository.findTasks(CREATE_USER_ID)
+                .test()
+                .assertValue(taskModels -> taskModels.size() == 0);
+    }
 }
