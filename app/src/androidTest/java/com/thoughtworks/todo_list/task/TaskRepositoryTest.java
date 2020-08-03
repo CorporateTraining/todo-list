@@ -36,6 +36,7 @@ public class TaskRepositoryTest {
     private AppDatabase appDatabase;
     private TaskRepository taskRepository;
     private TaskModel taskModel;
+    private String CREATE_ID = UUID.randomUUID().toString().replace("-", "").toLowerCase();
     private String CREATE_TITLE = "title";
     private String CREATE_DESCRIPTION = "description";
     private Date DATE = new Date();
@@ -52,7 +53,7 @@ public class TaskRepositoryTest {
                 AppDatabase.class).build();
         taskRepository = new TaskRepositoryImpl(appDatabase.taskDataSource());
         taskModel = new TaskModel(
-                UUID.randomUUID().toString().replace("-", "").toLowerCase(),
+                CREATE_ID,
                 CREATE_TITLE,
                 CREATE_DESCRIPTION,
                 DATE,
@@ -76,9 +77,26 @@ public class TaskRepositoryTest {
                 .subscribe();
         taskRepository.findTasks(CREATE_USER_ID)
                 .test()
-                .assertValue(taskModels -> taskModels.size() == 1);
-        taskRepository.findTasks(CREATE_USER_ID)
-                .test()
+                .assertValue(taskModels -> taskModels.size() == 1)
                 .assertValue(taskModels -> taskModels.get(0).getUserId() == CREATE_USER_ID);
     }
+
+    @Test
+    public void should_update_successfully_where_given_new_task_info() {
+        appDatabase.taskDataSource().save(new Task()
+                .build(taskModel))
+                .subscribeOn(Schedulers.io())
+                .subscribe();
+        final String NEW_TITLE = "new Title";
+        final boolean NEW_CHECKED = true;
+        taskModel.setTitle(NEW_TITLE);
+        taskModel.setChecked(NEW_CHECKED);
+        taskRepository.updateTask(taskModel).subscribeOn(Schedulers.io()).subscribe();
+        taskRepository.findById(CREATE_ID)
+                .test()
+                .assertValue(taskModel -> NEW_TITLE.equals(taskModel.getTitle()))
+                .assertValue(TaskModel::getChecked);
+
+    }
+
 }

@@ -18,8 +18,8 @@ public class TaskRepositoryImpl implements TaskRepository {
         this.dataSource = dataSource;
     }
 
-    public Maybe<TaskModel> findById(String name) {
-        return dataSource.findById(name).map(task -> new TaskModel().build(task));
+    public Maybe<TaskModel> findById(String taskId) {
+        return dataSource.findById(taskId).map(task -> new TaskModel().build(task));
     }
 
     @Override
