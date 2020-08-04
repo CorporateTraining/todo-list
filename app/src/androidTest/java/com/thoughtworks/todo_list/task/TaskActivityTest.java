@@ -3,9 +3,6 @@ package com.thoughtworks.todo_list.task;
 import android.icu.text.SimpleDateFormat;
 import android.text.format.DateFormat;
 
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.espresso.contrib.RecyclerViewActions;
-import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
@@ -27,30 +24,19 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
-import io.reactivex.Single;
-import io.reactivex.SingleObserver;
 import io.reactivex.internal.operators.single.SingleCreate;
 
-import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.openContextualActionModeOverflowMenu;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.typeTextIntoFocusedView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.assertion.ViewAssertions.selectedDescendantsMatch;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
-import static androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
-import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isOneOf;
 import static org.hamcrest.Matchers.not;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
@@ -59,7 +45,6 @@ import static org.mockito.Mockito.when;
 public class TaskActivityTest {
     private TaskRepository taskRepository;
     private TaskModel taskModel;
-    private TaskModel taskModel2;
     private MainApplication applicationContext;
     private final String CREATE_ID = UUID.randomUUID().toString().replace("-", "").toLowerCase();
     private final String CREATE_TITLE = "title";
@@ -81,11 +66,8 @@ public class TaskActivityTest {
         taskRepository = applicationContext.getTaskRepository();
         taskModel = new TaskModel(CREATE_ID, CREATE_TITLE, CREATE_DESCRIPTION, DATE,
                 CREATE_DATE, IS_CHECKED, IS_REMIND, CREATE_USER_ID);
-        taskModel2 = new TaskModel(CREATE_ID + "11", CREATE_TITLE + "11", CREATE_DESCRIPTION, DATE,
-                CREATE_DATE, IS_CHECKED, IS_REMIND, CREATE_USER_ID);
         taskModels = new ArrayList<>();
         taskModels.add(taskModel);
-        taskModels.add(taskModel2);
         when(taskRepository.findTasks(anyInt())).thenReturn(new SingleCreate<>(emitter -> emitter.onSuccess(taskModels)));
         mActivityRule.launchActivity(null);
     }
@@ -116,8 +98,9 @@ public class TaskActivityTest {
 
     @Test
     public void should_logout_successfully_when_click_logout_menu() {
+        String logout_menu = "登出";
         openContextualActionModeOverflowMenu();
-        onView(withText("登出")).perform(click());
+        onView(withText(logout_menu)).perform(click());
         onView(withText(R.string.success_logout))
                 .inRoot(withDecorView(not(is(mActivityRule.getActivity().getWindow().getDecorView()))))
                 .check(matches(isDisplayed()));
