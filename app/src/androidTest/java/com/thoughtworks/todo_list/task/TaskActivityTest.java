@@ -114,4 +114,14 @@ public class TaskActivityTest {
         onView(withId(R.id.create_date_info)).check(matches(withText(simpleDateFormat.format(DATE))));
     }
 
+    @Test
+    public void should_logout_successfully_when_click_logout_menu() {
+        openContextualActionModeOverflowMenu();
+        onView(withText("登出")).perform(click());
+        onView(withText(R.string.success_logout))
+                .inRoot(withDecorView(not(is(mActivityRule.getActivity().getWindow().getDecorView()))))
+                .check(matches(isDisplayed()));
+    }
+
+
 }
