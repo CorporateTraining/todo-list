@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.Toolbar;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -98,6 +99,7 @@ public class TaskActivity extends AppCompatActivity {
         edit.apply();
         Intent intent = new Intent(TaskActivity.this, LoginActivity.class);
         startActivity(intent);
+        Toast.makeText(this, getResources().getText(R.string.success_logout), Toast.LENGTH_SHORT).show();
     }
 
     private void setDateToTitle() {
