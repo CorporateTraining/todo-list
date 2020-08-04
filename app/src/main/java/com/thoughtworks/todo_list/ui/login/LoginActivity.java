@@ -35,11 +35,13 @@ public class LoginActivity extends AppCompatActivity {
     public final static String SHARED_USER = "user";
     public final static String SHARED_ID = "id";
     public final static String SHARED_NAME = "name";
+    private SharedPreferences preferences;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        autoLogin();
         loginViewModel = obtainViewModel();
         usernameEditText = findViewById(R.id.username);
         passwordEditText = findViewById(R.id.password);
@@ -51,6 +53,15 @@ public class LoginActivity extends AppCompatActivity {
         passwordEditText.addTextChangedListener(afterTextChangedListener);
         listenerPasswordKeyboardActionDone();
         listenerLogin();
+    }
+
+    private void autoLogin() {
+        preferences = getApplication().getSharedPreferences(SHARED_USER, Context.MODE_PRIVATE);
+        int userId = preferences.getInt(SHARED_ID, 0);
+        if (userId != 0) {
+            Intent intent = new Intent(this, TaskActivity.class);
+            startActivity(intent);
+        }
     }
 
     private void listenerLogin() {
