@@ -1,5 +1,8 @@
 package com.thoughtworks.todo_list.login;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -38,6 +41,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.hasErrorText;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.thoughtworks.todo_list.ui.login.LoginActivity.SHARED_ID;
+import static com.thoughtworks.todo_list.ui.login.LoginActivity.SHARED_NAME;
+import static com.thoughtworks.todo_list.ui.login.LoginActivity.SHARED_USER;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -52,7 +58,7 @@ public class LoginActivityTest {
     private MainApplication applicationContext;
 
     @Rule
-    public ActivityTestRule<LoginActivity> mActivityRule = new ActivityTestRule<>(LoginActivity.class);
+    public ActivityTestRule<LoginActivity> mActivityRule = new ActivityTestRule<>(LoginActivity.class, false, false);
     private final String CREATE_USER_NAME = "xiaoming";
     private final Integer CREATE_USER_ID = 1;
     private final String CREATE_PASSWORD = "123456";
@@ -62,6 +68,7 @@ public class LoginActivityTest {
         applicationContext = (MainApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
         userRepository = applicationContext.userRepository();
         taskRepository = applicationContext.getTaskRepository();
+        removeSharedUser();
         user = new UserModel(CREATE_USER_ID, CREATE_USER_NAME, Encryptor.md5(CREATE_PASSWORD));
         when(userRepository.save(ArgumentMatchers.any())).thenReturn(new Completable() {
             @Override
@@ -69,12 +76,21 @@ public class LoginActivityTest {
                 observer.onComplete();
             }
         });
+        when(taskRepository.findTasks(CREATE_USER_ID)).thenReturn(new SingleCreate<>(emitter -> emitter.onSuccess(new ArrayList<>())));
+        mActivityRule.launchActivity(null);
+    }
+
+    private void removeSharedUser() {
+        SharedPreferences preferences = applicationContext.getSharedPreferences(SHARED_USER, Context.MODE_PRIVATE);
+        SharedPreferences.Editor edit = preferences.edit();
+        edit.remove(SHARED_ID);
+        edit.remove(SHARED_NAME);
+        edit.apply();
     }
 
     @Test
     public void should_login_successfully_when_login_given_correct_username_and_password() {
         when(userRepository.findByName(CREATE_USER_NAME)).thenReturn(new MaybeCreate<>(emitter -> emitter.onSuccess(user)));
-        when(taskRepository.findTasks(CREATE_USER_ID)).thenReturn(new SingleCreate<>(emitter -> emitter.onSuccess(new ArrayList<>())));
 
         onView(ViewMatchers.withId(R.id.username)).perform(typeText(CREATE_USER_NAME)).perform(closeSoftKeyboard());
         onView(withId(R.id.password)).perform(typeText(CREATE_PASSWORD)).perform(closeSoftKeyboard());
