@@ -50,7 +50,7 @@ public class TaskActivityTest {
     private final int CREATE_USER_ID = 1;
 
     @Rule
-    public ActivityTestRule<TaskActivity> mActivityRule = new ActivityTestRule<>(TaskActivity.class);
+    public ActivityTestRule<TaskActivity> mActivityRule = new ActivityTestRule<>(TaskActivity.class, false, false);
 
     @Before
     public void before() {
@@ -60,6 +60,7 @@ public class TaskActivityTest {
         taskModel = new TaskModel(CREATE_ID, CREATE_TITLE, CREATE_DESCRIPTION, DATE,
                 CREATE_DATE, IS_CHECKED, IS_REMIND, CREATE_USER_ID);
         when(taskRepository.findTasks(anyInt())).thenReturn(new SingleCreate<>(emitter->emitter.onSuccess(new ArrayList<>())));
+        mActivityRule.launchActivity(null);
     }
 
     @Test
