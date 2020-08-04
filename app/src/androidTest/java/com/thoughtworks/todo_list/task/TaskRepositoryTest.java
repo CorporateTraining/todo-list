@@ -39,14 +39,14 @@ public class TaskRepositoryTest {
     private AppDatabase appDatabase;
     private TaskRepository taskRepository;
     private TaskModel taskModel;
-    private String CREATE_ID = UUID.randomUUID().toString().replace("-", "").toLowerCase();
-    private String CREATE_TITLE = "title";
-    private String CREATE_DESCRIPTION = "description";
-    private Date DATE = new Date();
-    private Date CREATE_DATE = new Date();
-    private boolean IS_CHECKED = false;
-    private boolean IS_REMIND = true;
-    private int CREATE_USER_ID = 1;
+    private final String CREATE_ID = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+    private final String CREATE_TITLE = "title";
+    private final String CREATE_DESCRIPTION = "description";
+    private final Date DATE = new Date();
+    private final Date CREATE_DATE = new Date();
+    private final boolean IS_CHECKED = false;
+    private final boolean IS_REMIND = true;
+    private final int CREATE_USER_ID = 1;
 
     @Before
     public void setUp() {

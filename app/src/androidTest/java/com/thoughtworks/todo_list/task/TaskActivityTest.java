@@ -1,143 +1,76 @@
 package com.thoughtworks.todo_list.task;
 
-import androidx.test.espresso.matcher.ViewMatchers;
+import android.text.format.DateFormat;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 
 import com.thoughtworks.todo_list.MainApplication;
 import com.thoughtworks.todo_list.R;
-import com.thoughtworks.todo_list.repository.utils.Encryptor;
-import com.thoughtworks.todo_list.ui.login.LoginActivity;
-import com.thoughtworks.todo_list.ui.login.UserRepository;
-import com.thoughtworks.todo_list.ui.login.model.UserModel;
+import com.thoughtworks.todo_list.ui.task.TaskActivity;
 import com.thoughtworks.todo_list.ui.task.TaskRepository;
+import com.thoughtworks.todo_list.ui.task.model.TaskModel;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
-import io.reactivex.Completable;
-import io.reactivex.CompletableObserver;
-import io.reactivex.Maybe;
-import io.reactivex.MaybeObserver;
-import io.reactivex.internal.operators.maybe.MaybeCreate;
+import io.reactivex.Single;
+import io.reactivex.SingleObserver;
 import io.reactivex.internal.operators.single.SingleCreate;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
-import static androidx.test.espresso.matcher.ViewMatchers.hasErrorText;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 
 @RunWith(AndroidJUnit4.class)
-public class TestActivityTest {
-    private UserRepository userRepository;
+public class TaskActivityTest {
     private TaskRepository taskRepository;
-    private UserModel user;
+    private TaskModel taskModel;
     private MainApplication applicationContext;
+    private final String CREATE_ID = UUID.randomUUID().toString().replace("-", "").toLowerCase();
+    private final String CREATE_TITLE = "title";
+    private final String CREATE_DESCRIPTION = "description";
+    private final Date DATE = new Date();
+    private final Date CREATE_DATE = new Date();
+    private final boolean IS_CHECKED = false;
+    private final boolean IS_REMIND = true;
+    private final int CREATE_USER_ID = 1;
 
     @Rule
-    public ActivityTestRule<LoginActivity> mActivityRule = new ActivityTestRule<>(LoginActivity.class);
-    private final String CREATE_USER_NAME = "xiaoming";
-    private final Integer CREATE_USER_ID = 1;
-    private final String CREATE_PASSWORD = "123456";
+    public ActivityTestRule<TaskActivity> mActivityRule = new ActivityTestRule<>(TaskActivity.class);
+
     @Before
     public void before() {
 
         applicationContext = (MainApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
-        userRepository = applicationContext.userRepository();
         taskRepository = applicationContext.getTaskRepository();
-        user = new UserModel(CREATE_USER_ID, CREATE_USER_NAME, Encryptor.md5(CREATE_PASSWORD));
-        when(userRepository.save(ArgumentMatchers.any())).thenReturn(new Completable() {
-            @Override
-            protected void subscribeActual(CompletableObserver observer) {
-                observer.onComplete();
-            }
-        });
+        taskModel = new TaskModel(CREATE_ID, CREATE_TITLE, CREATE_DESCRIPTION, DATE,
+                CREATE_DATE, IS_CHECKED, IS_REMIND, CREATE_USER_ID);
+        when(taskRepository.findTasks(anyInt())).thenReturn(new SingleCreate<>(emitter->emitter.onSuccess(new ArrayList<>())));
     }
 
     @Test
-    public void should_login_successfully_when_login_given_correct_username_and_password() {
-        when(userRepository.findByName(CREATE_USER_NAME)).thenReturn(new MaybeCreate<>(emitter -> emitter.onSuccess(user)));
-        when(taskRepository.findTasks(CREATE_USER_ID)).thenReturn(new SingleCreate<>(emitter -> emitter.onSuccess(new ArrayList<>())));
+    public void should_show_week_and_day() {
+        Date date = new Date();
+        String WEEK = DateFormat.format("EEEE", date).toString();
+        String MONTH = DateFormat.format("MMM", date).toString();
+        String DAY = DateFormat.format("dd", date).toString();
+        String WEEK_DAY = String.format("%s, %sth", WEEK, DAY);
 
-        onView(ViewMatchers.withId(R.id.username)).perform(typeText(CREATE_USER_NAME)).perform(closeSoftKeyboard());
-        onView(withId(R.id.password)).perform(typeText(CREATE_PASSWORD)).perform(closeSoftKeyboard());
-        onView(withId(R.id.login)).perform(click());
-        onView(withText(R.string.login_welcome))
-                .inRoot(withDecorView(not(is(mActivityRule.getActivity().getWindow().getDecorView()))))
-                .check(matches(isDisplayed()));
-    }
-
-    @Test
-    public void should_login_failed_when_login_given_invalid_password() {
-        final String WRONG_PASSWORD = "1234567";
-        when(userRepository.findByName(CREATE_USER_NAME)).thenReturn(new MaybeCreate<>(emitter -> emitter.onSuccess(user)));
-
-        onView(withId(R.id.username)).perform(typeText(CREATE_USER_NAME)).perform(closeSoftKeyboard());
-        onView(withId(R.id.password)).perform(typeText(WRONG_PASSWORD)).perform(closeSoftKeyboard());
-        onView(withId(R.id.login)).perform(click());
-        onView(withText(R.string.login_failed_password)).inRoot(withDecorView(not(is(mActivityRule.getActivity().getWindow().getDecorView()))))
-                .check(matches(isDisplayed()));
-    }
-
-    @Test
-    public void should_login_failed_when_login_given_username_does_not_exist() {
-        final String WRONG_USERNAME = "notexist";
-        final String WRONG_PASSWORD = "1234567";
-        when(userRepository.findByName(WRONG_USERNAME)).thenReturn(new Maybe<UserModel>() {
-            @Override
-            protected void subscribeActual(MaybeObserver<? super UserModel> observer) {
-                observer.onComplete();
-            }
-        });
-        when(userRepository.getUserByNetwork()).thenReturn(new MaybeCreate<>(emitter -> emitter.onSuccess(user)));
-        onView(withId(R.id.username)).perform(typeText(WRONG_USERNAME)).perform(closeSoftKeyboard());
-        onView(withId(R.id.password)).perform(typeText(WRONG_PASSWORD)).perform(closeSoftKeyboard());
-        onView(withId(R.id.login)).perform(click());
-        onView(withText(R.string.login_failed_username)).inRoot(withDecorView(not(is(mActivityRule.getActivity().getWindow().getDecorView()))))
-                .check(matches(isDisplayed()));
-    }
-
-    @Test
-    public void should_login_failed_when_login_given_username_invalid() {
-        when(userRepository.findByName(anyString())).thenReturn(new Maybe<UserModel>() {
-            @Override
-            protected void subscribeActual(MaybeObserver<? super UserModel> observer) {
-                observer.onComplete();
-            }
-        });
-        final String SHORT_USERNAME = "s";
-        onView(withId(R.id.username)).perform(typeText(SHORT_USERNAME));
-        onView(withId(R.id.username)).check(matches(hasErrorText(applicationContext.getString(R.string.invalid_username))));
-    }
-
-    @Test
-    public void should_login_failed_when_login_given_password_invalid() {
-        when(userRepository.findByName(anyString())).thenReturn(new Maybe<UserModel>() {
-            @Override
-            protected void subscribeActual(MaybeObserver<? super UserModel> observer) {
-                observer.onComplete();
-            }
-        });
-        onView(withId(R.id.username)).perform(typeText(CREATE_USER_NAME)).perform(closeSoftKeyboard());
-        final String SHORT_PASSWORD = "123";
-        onView(withId(R.id.password)).perform(typeText(SHORT_PASSWORD));
-        onView(withId(R.id.password)).check(matches(hasErrorText(applicationContext.getString(R.string.invalid_password))));
+        onView(withId(R.id.week_and_day)).check(matches(withText(WEEK_DAY)));
+        onView(withId(R.id.month)).check(matches(withText(MONTH)));
     }
 }
