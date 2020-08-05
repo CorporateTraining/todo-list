@@ -27,6 +27,8 @@ public class TaskViewModel extends ViewModel {
     private MutableLiveData<List<TaskModel>> tasksMutableLiveData = new MutableLiveData<>();
     private TaskRepository taskRepository;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private Boolean hasDate = false;
+    private Boolean hasTitle = false;
     private final static String TAG = "LoginViewModel";
 
     public void setTaskRepository(TaskRepository taskRepository) {
@@ -35,6 +37,22 @@ public class TaskViewModel extends ViewModel {
 
     void observeTasks(LifecycleOwner lifecycleOwner, Observer<List<TaskModel>> observer) {
         tasksMutableLiveData.observe(lifecycleOwner, observer);
+    }
+
+    public Boolean getHasDate() {
+        return hasDate;
+    }
+
+    public Boolean getHasTitle() {
+        return hasTitle;
+    }
+
+    public void setHasDate(Boolean hasDate) {
+        this.hasDate = hasDate;
+    }
+
+    public void setHasTitle(Boolean hasTitle) {
+        this.hasTitle = hasTitle;
     }
 
     public void getTasks(Integer userId) {

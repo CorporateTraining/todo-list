@@ -33,7 +33,6 @@ import java.util.Locale;
 import java.util.UUID;
 
 import static com.thoughtworks.todo_list.ui.login.LoginActivity.SHARED_ID;
-import static com.thoughtworks.todo_list.ui.login.LoginActivity.SHARED_NAME;
 import static com.thoughtworks.todo_list.ui.login.LoginActivity.SHARED_USER;
 import static com.thoughtworks.todo_list.ui.task.TaskActivity.TASK_VIEW_KEY;
 import static com.thoughtworks.todo_list.ui.task.TaskAlarManager.taskAlarManager;
@@ -48,8 +47,6 @@ public class CreateTaskActivity extends AppCompatActivity {
     private CalendarView calendarView;
     private Button createSubmitButton, deleteButton;
     private TaskViewModel taskViewModel;
-    private Boolean hasDate = false;
-    private Boolean hasTitle = false;
     private TaskModel taskModel;
 
     @Override
@@ -63,14 +60,14 @@ public class CreateTaskActivity extends AppCompatActivity {
         createIsRemind = findViewById(R.id.create_switch);
         calendarView = findViewById(R.id.calendar_view);
         createDateInfo = findViewById(R.id.create_date_info);
-        createSubmitButton = findViewById(R.id.create_button);
+        createSubmitButton = findViewById(R.id.create_task_button);
         deleteButton = findViewById(R.id.delete_button);
-        fillingTaskData();
-
         taskViewModel = obtainViewModel();
+
+        fillingTaskData();
         toolbar.setNavigationOnClickListener(v -> finish());
-        calendarView.setVisibility(View.INVISIBLE);
-        createSubmitButton.setEnabled(hasDate && hasTitle);
+        calendarView.setVisibility(View.GONE);
+        createSubmitButton.setEnabled(taskViewModel.getHasDate() && taskViewModel.getHasTitle());
         listenerEmptyTitle();
         listenerShowCalendarView();
         listenerSelectCalendarData();
@@ -88,10 +85,10 @@ public class CreateTaskActivity extends AppCompatActivity {
                 createIsChecked.setChecked(taskModel.getChecked());
                 createIsRemind.setChecked(taskModel.getRemind());
                 createDateInfo.setText(simpleDateFormat.format(taskModel.getDate()));
-                hasDate = true;
-                hasTitle = true;
+                taskViewModel.setHasDate(true);
+                taskViewModel.setHasTitle(true);
                 this.createDateInfo.setTextColor(ContextCompat.getColor(this, R.color.colorTextBlue));
-                deleteButton.setVisibility(View.VISIBLE);
+                deleteButton.setVisibility(View.GONE);
                 deleteTaskJumpTaskListPage();
             }
         }
@@ -106,7 +103,7 @@ public class CreateTaskActivity extends AppCompatActivity {
 
     private void listenerShowCalendarView() {
         createDateInfo.setOnClickListener(view -> {
-            int visible = calendarView.getVisibility() == View.VISIBLE ? View.INVISIBLE : View.VISIBLE;
+            int visible = calendarView.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE;
             calendarView.setVisibility(visible);
         });
     }
@@ -143,7 +140,7 @@ public class CreateTaskActivity extends AppCompatActivity {
         Date date = simpleDateFormat.parse(createDateInfo.getText().toString());
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
-        cal.add(Calendar.HOUR, 6);// 24小时制
+        cal.add(Calendar.HOUR, 6);
         date = cal.getTime();
         taskModel = new TaskModel(
                 UUID.randomUUID().toString().replace("-", "").toLowerCase(),
@@ -176,11 +173,11 @@ public class CreateTaskActivity extends AppCompatActivity {
 
     private void listenerSelectCalendarData() {
         calendarView.setOnDateChangeListener((calendarView, year, month, day) -> {
-            this.calendarView.setVisibility(View.INVISIBLE);
+            this.calendarView.setVisibility(View.GONE);
             this.createDateInfo.setText(String.format("%s年%s月%s日", year, month + 1, day));
             this.createDateInfo.setTextColor(ContextCompat.getColor(this, R.color.colorTextBlue));
-            createSubmitButton.setEnabled(hasTitle);
-            hasDate = true;
+            createSubmitButton.setEnabled(taskViewModel.getHasTitle());
+            taskViewModel.setHasDate(true);
         });
     }
 
@@ -196,8 +193,8 @@ public class CreateTaskActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                hasTitle = createTitle.getText().toString().length() > 0;
-                createSubmitButton.setEnabled(hasTitle && hasDate);
+                taskViewModel.setHasTitle(createTitle.getText().toString().length() > 0);
+                createSubmitButton.setEnabled(taskViewModel.getHasTitle() && taskViewModel.getHasDate());
             }
         });
     }

@@ -46,7 +46,7 @@ public class TaskActivity extends AppCompatActivity {
         setActionBar(toolbar);
         toolbar.inflateMenu(R.menu.home_menu);
         weekAndDay = findViewById(R.id.week_and_day);
-        createButton = findViewById(R.id.create_button);
+        createButton = findViewById(R.id.create_task_button);
         month = findViewById(R.id.month);
         taskNumber = findViewById(R.id.task_number);
         setDateToTitle();
