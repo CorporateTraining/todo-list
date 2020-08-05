@@ -12,7 +12,10 @@ import android.os.Bundle;
 import androidx.core.app.NotificationCompat;
 
 import com.thoughtworks.todo_list.R;
+import com.thoughtworks.todo_list.repository.utils.GsonUtil;
 import com.thoughtworks.todo_list.ui.task.model.TaskModel;
+
+import java.util.Date;
 
 import static com.thoughtworks.todo_list.ui.task.TaskAlarManager.TASK_MODEL_KEY;
 import static com.thoughtworks.todo_list.ui.task.TaskAlarManager.TASK_NOTIFICATION;
@@ -23,15 +26,11 @@ public class TaskReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if (TASK_NOTIFICATION.equals(intent.getAction())) {
-            TaskModel taskModel;
-            Bundle bundle = intent.getExtras();
-            if (bundle != null) {
-                taskModel = (TaskModel) bundle.getSerializable(TASK_MODEL_KEY);
-                if (taskModel != null) {
-                    showNotification(context, taskModel);
-                }
+            String taskModelJson = intent.getStringExtra(TASK_MODEL_KEY);
+            TaskModel taskModel = GsonUtil.stringFromJson(taskModelJson, TaskModel.class);
+            if (taskModel != null) {
+                showNotification(context, taskModel);
             }
-
         }
     }
 
