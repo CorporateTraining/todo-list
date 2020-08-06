@@ -1,5 +1,6 @@
 package com.thoughtworks.todo_list.task;
 
+import androidx.test.espresso.contrib.PickerActions;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
@@ -15,12 +16,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Calendar;
+
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -59,5 +61,16 @@ public class CreateActivityTest {
         onView(withId(R.id.create_title)).perform(typeText(title)).perform(closeSoftKeyboard());
         onView(withId(R.id.create_description)).perform(typeText(description)).perform(closeSoftKeyboard());
         onView(withId(R.id.create_task_button)).check(matches(not(isEnabled())));
+    }
+
+    @Test
+    public void should_create_successfully_when_correct_title_and_correct_date(){
+        String title = "title";
+        String description = "description";
+        onView(withId(R.id.create_title)).perform(typeText(title)).perform(closeSoftKeyboard());
+        onView(withId(R.id.create_description)).perform(typeText(description)).perform(closeSoftKeyboard());
+        onView(withId(R.id.create_date_info)).perform(click());
+        onView(withId(R.id.date_picker_view)).perform(PickerActions.setDate(Calendar.YEAR, Calendar.MONTH, Calendar.DAY_OF_MONTH));
+        onView(withId(R.id.create_task_button)).check(matches(isEnabled()));
     }
 }

@@ -9,8 +9,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CalendarView;
 import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -44,7 +44,7 @@ public class CreateTaskActivity extends AppCompatActivity {
     private TextView createDateInfo;
     private CheckBox createIsChecked;
     private Switch createIsRemind;
-    private CalendarView calendarView;
+    private DatePicker datePicker;
     private Button createSubmitButton, deleteButton;
     private TaskViewModel taskViewModel;
     private TaskModel taskModel;
@@ -58,7 +58,7 @@ public class CreateTaskActivity extends AppCompatActivity {
         createDescription = findViewById(R.id.create_description);
         createIsChecked = findViewById(R.id.create_check_box);
         createIsRemind = findViewById(R.id.create_switch);
-        calendarView = findViewById(R.id.calendar_view);
+        datePicker = findViewById(R.id.date_picker_view);
         createDateInfo = findViewById(R.id.create_date_info);
         createSubmitButton = findViewById(R.id.create_task_button);
         deleteButton = findViewById(R.id.delete_button);
@@ -66,7 +66,7 @@ public class CreateTaskActivity extends AppCompatActivity {
 
         fillingTaskData();
         toolbar.setNavigationOnClickListener(v -> finish());
-        calendarView.setVisibility(View.GONE);
+        datePicker.setVisibility(View.GONE);
         createSubmitButton.setEnabled(taskViewModel.getHasDate() && taskViewModel.getHasTitle());
         listenerEmptyTitle();
         listenerShowCalendarView();
@@ -103,8 +103,8 @@ public class CreateTaskActivity extends AppCompatActivity {
 
     private void listenerShowCalendarView() {
         createDateInfo.setOnClickListener(view -> {
-            int visible = calendarView.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE;
-            calendarView.setVisibility(visible);
+            int visible = datePicker.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE;
+            datePicker.setVisibility(visible);
         });
     }
 
@@ -172,8 +172,8 @@ public class CreateTaskActivity extends AppCompatActivity {
     }
 
     private void listenerSelectCalendarData() {
-        calendarView.setOnDateChangeListener((calendarView, year, month, day) -> {
-            this.calendarView.setVisibility(View.GONE);
+        datePicker.setOnDateChangedListener((calendarView, year, month, day) -> {
+            this.datePicker.setVisibility(View.GONE);
             this.createDateInfo.setText(String.format("%s年%s月%s日", year, month + 1, day));
             this.createDateInfo.setTextColor(ContextCompat.getColor(this, R.color.colorTextBlue));
             createSubmitButton.setEnabled(taskViewModel.getHasTitle());
